@@ -1,0 +1,40 @@
+# GCP Stimulator — run the whole emulator (backend + frontend) in Docker.
+#
+# Quickstart:
+#   docker compose up --build
+#   open http://localhost:3000
+#
+# The backend manages its own Docker-backed resources (Compute instances,
+# VPC networks, Cloud SQL/Memorystore, the Cloud Storage fake-gcs-server
+# backend, etc) by talking to the HOST's Docker daemon via the mounted
+# socket below — it does not run Docker-in-Docker.
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    # No DATABASE_URL set here on purpose: the app defaults to local SQLite
+    # when the variable is absent from the environment entirely. (A
+    # Compose `${DATABASE_URL:-}` interpolation here would instead set it
+    # to an actual *empty string*, which is NOT the same as unset — the
+    # backend's `os.getenv("DATABASE_URL", default)` only falls back to
+    # its default when the key is missing, not when it's empty, so an
+    # empty string would reach `create_engine("")` and crash on startup.)
+    # To use Postgres instead, create a docker-compose.override.yml with:
+    #   services:
+    #     backend:
+    #       environment:
+    #         - DATABASE_URL=postgresql://user:pass@host:5432/db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

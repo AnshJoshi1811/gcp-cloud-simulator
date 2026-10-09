@@ -331,35 +331,11 @@ export ENABLE_GCLOUD_TESTS=true
 
 ## CI/CD Integration
 
-### GitHub Actions Example
-
-```yaml
-name: Tests
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-      
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-html
-      
-      - name: Run tests
-        run: ./tests/run_full_suite.sh --coverage
-      
-      - name: Upload reports
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-reports
-          path: htmlcov/
-```
+This now runs for real on every push/PR — see
+[`.github/workflows/backend-ci.yml`](../.github/workflows/backend-ci.yml),
+which installs the backend package (`pip install -e ".[test]"`, from
+`backend/pyproject.toml`), starts the server, and runs
+`pytest tests/integration`.
 
 ---
 

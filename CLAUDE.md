@@ -204,10 +204,10 @@ pytest --cov=../backend --cov-report=html
 ### Utilities
 ```bash
 # Check database connectivity
-bash test-connectivity.sh
+bash scripts/test-connectivity.sh
 
 # Generate project context (for LLMs)
-python generate_context.py
+python scripts/generate_context.py
 ```
 
 ## Workflows
@@ -229,18 +229,18 @@ python generate_context.py
    - API Docs: http://localhost:8080/docs (Swagger)
 
 ### Adding a New GCP Service
-1. Create SQLAlchemy models in `backend/database.py`
-2. Create service logic in `backend/services/{service_name}/`
-3. Create API routes in `backend/api/{service_name}.py`
-4. Register route in `backend/main.py`
-5. Create React page in `frontend/src/pages/`
-6. Create API client in `frontend/src/api/{service_name}.ts`
-7. Add routes to React Router in `frontend/src/App.tsx`
+1. Add any new SQLAlchemy models to `backend/app/models/database.py`
+2. Create service logic in `backend/app/services/{service_name}/` (models.py, storage.py/business logic, router.py)
+3. Register the router in `backend/app/main.py`
+4. Create React page in `frontend/src/pages/`
+5. Create API client in `frontend/src/api/{service_name}.ts`
+6. Add routes to React Router in `frontend/src/App.tsx`
 
 ### Docker Integration
-- **Backend**: Can be containerized with Dockerfile in `frontend/` (nginx proxy)
-- **Frontend**: Served via Nginx in production
-- **Database**: Expects PostgreSQL RDS connection via `DATABASE_URL` env var
+- **Backend**: `backend/Dockerfile`
+- **Frontend**: `frontend/Dockerfile` (Nginx), see `frontend/nginx.conf`
+- **Bring up both together**: `docker-compose.yml` at the repo root
+- **Database**: defaults to SQLite (`DATABASE_URL` unset); set `DATABASE_URL` to a PostgreSQL connection string to use Postgres instead
 
 ## Environment Variables
 
@@ -305,7 +305,6 @@ VITE_API_BASE_URL=http://localhost:8080  # Backend API URL
 - `README.md` — Project overview
 - `IMPLEMENTATION_TRACKER.md` — Feature checklist
 - `CONTEXT_CHECKPOINT.md` — Context history
-- `docs/archived/` — Research and archived docs
 - API Docs — Auto-generated via Swagger at `/docs`
 
 ---

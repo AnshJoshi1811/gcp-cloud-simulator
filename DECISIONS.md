@@ -87,6 +87,65 @@ surface area without adding anything a user could meaningfully test against.
 Noted here (rather than silently ignored) so the tracker's "partial" status
 is a deliberate call, not an oversight.
 
+## 2026-10-09 — Production-style repo restructuring
+
+Owner's explicit request: a "production style repo structure" — standard
+packaging, CI/CD, docs/governance files, repo tree cleanup, and separating
+MiniCloud (an unrelated AWS product) out of this GCP-emulator repo. Done on
+branch `restructure/production-layout`, landed via PR rather than direct to
+`main`. Concrete changes and rationale:
+
+- **MiniCloud extracted** to its own repository,
+  [AnshJoshi1811/minicloud](https://github.com/AnshJoshi1811/minicloud).
+  Attempted a history-preserving `git subtree split` first; abandoned it
+  after it ran for 45+ minutes with almost no CPU time consumed (a known
+  weakness of `git subtree split`'s algorithm, not a hang) — pushed a fresh
+  snapshot commit instead. MiniCloud's original development history is
+  still fully available in *this* repo's git history (commits `8dcd1ac`,
+  `62da58f`, `b716540`) for anyone who needs it; only the new repo's own
+  history starts fresh.
+- **One more dead file found**: `backend/app/api/vpc.py` — unreferenced
+  anywhere (verified via grep, same rigor as the earlier dead-code audit
+  that caught `compute.py`/`firewall.py`/`gke.py`/`iam.py`/`projects.py`/
+  `routes.py`), missed by that audit's search pattern. Removed.
+- **Also removed**: `backend/database.py` and `backend/core/` (both
+  explicitly self-documented "backward-compatibility shim"s with zero real
+  importers — verified via grep), `backend/FEATURES_VERIFIED.md` (another
+  orphaned point-in-time status doc, same genre as the ones removed in the
+  earlier cleanup pass but missed since it was nested in `backend/` not
+  root), and a stub root `package-lock.json` (`{"packages": {}}` — vestigial,
+  the real one is `frontend/package-lock.json`).
+- **Packaging**: `backend/requirements.txt` replaced by `backend/pyproject.toml`
+  as the single source of dependency truth (standard `pip install -e .`
+  instead of `pip install -r requirements.txt`). Also fixed `docker==7.0.0`
+  → `docker>=7.1.0` here too — the same `urllib3`-2.x incompatibility
+  (`Not supported URL scheme http+docker`) already fixed on the
+  `feature/terraform-google-provider` branch.
+- **CI/CD added** (none existed before): `.github/workflows/backend-ci.yml`
+  (installs the package, boots the server, runs `pytest tests/integration`),
+  `frontend-ci.yml` (lint + build), `docker-build.yml` (builds both images,
+  smoke-tests via `docker compose up`). Added `backend/Dockerfile` (didn't
+  exist — only the frontend had one) and a root `docker-compose.yml` wiring
+  both together, with the host Docker socket mounted into the backend
+  container so its own Docker-management features keep working when
+  containerized.
+- **Governance**: `LICENSE` (MIT — a permissive default, no stated reason to
+  pick anything more restrictive), `CONTRIBUTING.md` (dev setup + the
+  Terraform-compatibility verification bar), `.github/ISSUE_TEMPLATE/` (bug
+  report + feature/service request), `.github/PULL_REQUEST_TEMPLATE.md`.
+- **Repo tree**: loose root scripts (`stimulator`, `generate_context.py`,
+  `test-connectivity.sh`) moved into `scripts/`; the `stimulator` script
+  renamed to `stimulator.sh` (it had no extension at all). `.agents/`,
+  `AI_AGENT_BUILD_ALL_PROMPT.md`, and `patches/` were explicitly NOT removed
+  — the owner already decided to keep these in an earlier cleanup round.
+- Fixed several stale docs discovered along the way: `README.md`/`CLAUDE.md`
+  had hardcoded `/home/ubuntu/gcs-emulator/...`-style absolute paths from
+  whoever's dev machine originally generated them, `requirements.txt`
+  references throughout, and a `CLAUDE.md` "Adding a New GCP Service"
+  section pointing at paths (`backend/database.py`, `backend/services/`,
+  `backend/api/{name}.py`) that don't match where code actually lives
+  (`backend/app/models/database.py`, `backend/app/services/{name}/router.py`).
+
 (Further decisions appended below as work proceeds.)
 
 ---

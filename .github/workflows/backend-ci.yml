@@ -1,0 +1,37 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend
+        working-directory: backend
+        run: pip install -e ".[test]"
+
+      - name: Start backend server
+        working-directory: backend
+        run: |
+          nohup uvicorn app.main:app --host 0.0.0.0 --port 8080 > /tmp/backend.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/health && break
+            sleep 1
+          done
+
+      - name: Run integration tests
+        run: python -m pytest tests/integration -k "not gcloud" -v
+
+      - name: Show backend log on failure
+        if: failure()
+        run: cat /tmp/backend.log || true

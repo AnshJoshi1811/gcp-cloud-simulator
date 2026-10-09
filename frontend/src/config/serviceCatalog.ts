@@ -30,7 +30,7 @@ export const serviceCategories: ServiceCategory[] = [
       {
         id: 'storage',
         name: 'Cloud Storage',
-        description: 'Object storage for companies of all sizes',
+        description: 'Buckets and objects, stored on this machine\'s disk',
         icon: HardDrive,
         category: 'Storage',
         enabled: true,
@@ -50,7 +50,7 @@ export const serviceCategories: ServiceCategory[] = [
       {
         id: 'compute-engine',
         name: 'Compute Engine',
-        description: 'Virtual machines running in Google\'s data center',
+        description: 'Virtual machines, running as Docker containers on this machine',
         icon: Cpu,
         category: 'Compute',
         enabled: true,
@@ -324,7 +324,7 @@ export const serviceCategories: ServiceCategory[] = [
       {
         id: 'monitoring',
         name: 'Cloud Monitoring',
-        description: 'Monitor your Google Cloud and AWS resources',
+        description: 'Metrics and alerts for the resources running here',
         icon: Activity,
         category: 'Monitoring',
         enabled: true,
