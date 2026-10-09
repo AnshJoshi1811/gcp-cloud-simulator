@@ -4,6 +4,16 @@ A **local GCP emulator** for development and testing: FastAPI backend with Docke
 services where that mirrors real GCP behavior (VM instances and Cloud SQL/Memorystore are
 real Docker containers; VPCs are real Docker networks), and a React + TypeScript console UI.
 
+> **🎯 Mission**: be for GCP what [LocalStack](https://github.com/localstack/localstack) is
+> for AWS — a real local server the *official, unmodified* Terraform `google` provider (and
+> eventually the `google-cloud-python`/other SDKs) can be pointed at via endpoint overrides,
+> with genuine wire-protocol fidelity per resource, not just enough to satisfy `gcloud` CLI
+> calls. This is a long-term, resource-by-resource effort — see the "Terraform / google-
+> provider compatibility" section of [DECISIONS.md](DECISIONS.md) for current real-provider-
+> verified coverage, and [PLAN.md](PLAN.md)'s Deliverable 3 for the roadmap. LocalStack
+> covers 100+ AWS services built up over ~8 years; this is the equivalent long game for GCP,
+> starting from Cloud Storage (done) toward VPC and Compute Engine (in progress).
+
 > **📊 Status: 24 of 26 cataloged services implemented** (see
 > [IMPLEMENTATION_TRACKER.md](IMPLEMENTATION_TRACKER.md) for the authoritative,
 > per-service status). One service (Service Management / billing-quotas) is
@@ -93,7 +103,8 @@ gcp-cloud-simulator/
 
 | Service | Status | Notes |
 |---|---|---|
-| Projects, VPC, Compute Engine, Cloud Storage, IAM | ✅ Complete | Core infra, Docker-backed |
+| Projects, VPC, Compute Engine, IAM | ✅ Complete | Core infra, Docker-backed |
+| Cloud Storage | ✅ Complete | Core bucket/object CRUD proxies to a real `fake-gcs-server` container — genuine GCS wire-protocol fidelity, verified against the real `hashicorp/google` Terraform provider (not just `gcloud`); see DECISIONS.md |
 | GKE, Cloud Run, Artifact Registry | ✅ Complete | |
 | Pub/Sub, Cloud Monitoring, Autoscaling | ✅ Complete | |
 | Secret Manager, Cloud KMS, Cloud Tasks | ✅ Complete | KMS encryption is a local reversible stand-in, not real crypto |
@@ -106,7 +117,7 @@ gcp-cloud-simulator/
 | Cloud CDN | ✅ Complete | Real in-memory cache fronting actual Storage objects |
 | Event Routing (Eventarc-style) | ✅ Complete | Real Pub/Sub → Cloud Functions dispatch |
 | Service Management | 🟡 Partial | Left as-is — no real billing to emulate locally, see DECISIONS.md |
-| Deployment Manager | ⬜ Skipped | Deliberate — see DECISIONS.md (MiniCloud covers Terraform/IaC instead) |
+| Deployment Manager | ⬜ Skipped | Deliberate — a GCP-flavored IaC engine isn't worth building here, see DECISIONS.md. Real `hashicorp/google` Terraform provider compatibility is pursued directly (see `feature/terraform-google-provider`), not as a MiniCloud substitute |
 
 Full per-service detail, dependencies, and history: [IMPLEMENTATION_TRACKER.md](IMPLEMENTATION_TRACKER.md).
 Engineering decisions and rationale: [DECISIONS.md](DECISIONS.md).

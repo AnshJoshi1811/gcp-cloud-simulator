@@ -768,6 +768,41 @@ def ensure_local_registry() -> Dict[str, str]:
     return {"container_id": c.id, "endpoint": "localhost:5000", "status": "RUNNING"}
 
 
+_FAKE_GCS_CONTAINER = "gcs-stimulator-fake-gcs-server"
+_FAKE_GCS_PORT = 4443
+
+
+def ensure_fake_gcs_server() -> Dict[str, str]:
+    """Ensure a real fake-gcs-server (fsouza/fake-gcs-server) container is
+    running on localhost:4443. This is what gives Cloud Storage genuine GCS
+    wire-protocol fidelity (real JSON/XML/resumable-upload semantics) instead
+    of a hand-rolled approximation — see DECISIONS.md's Phase 0 writeup."""
+    if not _docker_available:
+        return {
+            "container_id": "stub-fake-gcs",
+            "endpoint": f"http://localhost:{_FAKE_GCS_PORT}",
+            "status": "RUNNING",
+        }
+    try:
+        c = client.containers.get(_FAKE_GCS_CONTAINER)
+        if c.status != "running":
+            c.start()
+        return {"container_id": c.id, "endpoint": f"http://localhost:{_FAKE_GCS_PORT}", "status": "RUNNING"}
+    except docker.errors.NotFound:
+        pass
+
+    c = client.containers.run(
+        "fsouza/fake-gcs-server",
+        name=_FAKE_GCS_CONTAINER,
+        command=["-scheme", "http", "-public-host", f"localhost:{_FAKE_GCS_PORT}"],
+        detach=True,
+        ports={f"{_FAKE_GCS_PORT}/tcp": _FAKE_GCS_PORT},
+        restart_policy={"Name": "unless-stopped"},
+        labels={"gcs-stimulator": "true", "service": "storage-backend"},
+    )
+    return {"container_id": c.id, "endpoint": f"http://localhost:{_FAKE_GCS_PORT}", "status": "RUNNING"}
+
+
 def normalize_registry_image(image: str, project_id: str) -> str:
     """Translate gcr.io/pkg.dev style names to localhost:5000 for local pulls."""
     stripped = image.strip()
