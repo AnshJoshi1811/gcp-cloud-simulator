@@ -11,6 +11,11 @@ the live Cloud Storage implementation (noted in its own main.py comment as "stab
 the rest of `api/*.py` in place but mark deprecated rather than delete, since deleting
 dead code isn't needed to finish the task and risks breaking an undiscovered import.
 
+(Update, 2026-10-09, separate cleanup pass on `main`: the dead `api/*.py` files above
+were subsequently removed entirely after a verified-unreferenced audit — see `main`
+branch commit `8d7fe3c`. Noted here so this entry isn't read as still-current advice
+against deleting them.)
+
 ## 2026-10-09 — Tracker vs reality
 IMPLEMENTATION_TRACKER.md's summary table undercounts completed work (says Secret
 Manager "not started" when it's fully implemented and wired). Decision: trust the
@@ -65,6 +70,13 @@ If it's wanted later, the natural entry point is a `deploymentmanager`
 service that parses a config's `resources:` list and dispatches to each
 service's existing storage.create_* methods already built here.
 
+(Update, 2026-10-09, this branch: reason #2 above is superseded in spirit by
+the effort below — gcp-cloud-simulator itself is now pursuing real
+Terraform compatibility directly, not just leaving it to MiniCloud. The
+decision to skip Deployment Manager specifically still stands on its own
+merits — see reasons #1 and #3 — but is no longer leaning on "that's
+MiniCloud's job" as a rationale.)
+
 ## 2026-10-09 — Service Management: left partial
 The tracker's row for Service Management ("billing/quotas") predates this
 session and no corresponding `backend/app/services/service_management/`
@@ -76,3 +88,113 @@ Noted here (rather than silently ignored) so the tracker's "partial" status
 is a deliberate call, not an oversight.
 
 (Further decisions appended below as work proceeds.)
+
+---
+
+# Terraform / google-provider compatibility
+
+Engineering decisions for the effort to make gcp-cloud-simulator a genuine,
+wire-protocol-faithful GCP API mock — the GCP ecosystem's equivalent of
+`moto` — using the real `hashicorp/google` Terraform provider as the
+empirical conformance test, mirroring the role moto's AWS-provider
+compatibility plays for moto itself.
+
+## 2026-10-09 — Phase 0 finding #1: no mature "moto for GCP" exists, but mature *per-service* emulators do
+
+Searched for an existing general-purpose GCP mock with AWS-moto-level
+coverage and maturity. Conclusion: **nothing comparable exists.**
+
+- `drongo` (PyPI, claims to be "the moto for GCP") — works by monkey-patching
+  the Python `google-cloud-*` client libraries in-process (no HTTP server at
+  all). This architecture is irrelevant to Terraform compatibility: Terraform
+  is a compiled Go binary that speaks GCP's REST/JSON wire protocol directly —
+  it never goes through a Python client library, so patching one does nothing
+  for us. Ruled out entirely for this project's purpose, regardless of its
+  maturity.
+- `mock-gcp` (PyPI) — explicitly marked "not yet working," storage-only.
+  Not viable.
+- **`fake-gcs-server`** (github.com/fsouza/fake-gcs-server, Go) — this IS a
+  mature, real, widely-used emulator: runs a genuine HTTP(+gRPC) server that
+  speaks GCS's actual JSON/XML/resumable-upload wire protocol, used
+  extensively in CI pipelines across the Go/GCP ecosystem for years. This is
+  the GCS equivalent of what moto is to S3.
+- Google's own official emulators (Pub/Sub, Firestore, Datastore, Spanner,
+  Bigtable — shipped with `gcloud` SDK, genuinely protocol-faithful) exist
+  for several services, but notably **not** for Compute Engine or VPC — the
+  services this project's Terraform-compatibility priority order actually
+  needs most. Confirmed no official or mature third-party Compute
+  Engine/VPC emulator exists anywhere; that fidelity work has no shortcut and
+  must be built directly in this repo.
+
+**Decision:** adopt the same strategy MiniCloud used with moto — prefer a
+mature, already-correct emulator per service where one exists, and only
+hand-build protocol fidelity where it doesn't:
+- **Cloud Storage → wrap/proxy `fake-gcs-server`** instead of hand-rolling
+  GCS wire-protocol fidelity. This repo's existing Storage service becomes a
+  thin layer in front of a real `fake-gcs-server` instance (likely
+  Docker-managed, mirroring how MiniCloud manages containers), rather than
+  reimplementing GCS's JSON API by hand.
+- **VPC Networks/Subnetworks and Compute Engine instances → no mature
+  emulator exists; must be hand-built** to real GCP REST API conformance.
+  This is genuinely the hard, novel part of the whole effort — same
+  conclusion MiniCloud reached about EC2-to-Docker orchestration being its
+  real value-add once moto solved AWS protocol fidelity.
+
+## 2026-10-09 — Phase 0 finding #2: the real Terraform google provider CAN be pointed at a local mock with fake credentials — empirically verified, not just researched
+
+This was the critical viability question, and it is **resolved positively**,
+with a real, witnessed end-to-end test (not just documentation reading):
+
+- Ran real `fake-gcs-server` (Docker, `fsouza/fake-gcs-server`, `-scheme http`)
+  on `localhost:4443` inside WSL Ubuntu-24.04 (the same environment used to
+  verify MiniCloud).
+- Wrote a minimal `terraform-examples/gcs-probe/main.tf`: real
+  `hashicorp/google` provider v5.45.2 (the actual, unmodified provider —
+  `terraform init` pulled it from the public registry), configured with:
+  ```hcl
+  provider "google" {
+    project      = "test-project"
+    region       = "us-central1"
+    access_token = "dummy-access-token"
+    storage_custom_endpoint = "http://localhost:4443/storage/v1/"
+  }
+  ```
+- Ran the real `terraform` binary: `init` → `apply` → verified the bucket
+  genuinely exists via a direct, unsigned `curl` to fake-gcs-server's own API
+  (not just trusting Terraform's "Apply complete" message) → `destroy`.
+  **All four steps succeeded for real**, full transcript:
+  - `apply`: `google_storage_bucket.probe: Creation complete after 0s
+    [id=mock-probe-bucket]`
+  - Direct verification: `curl http://localhost:4443/storage/v1/b/mock-probe-bucket`
+    returned a real bucket JSON object (`"id":"mock-probe-bucket"`, real
+    timestamps, etc.) — not a Terraform-only illusion.
+  - `destroy`: `google_storage_bucket.probe: Destruction complete after 0s`
+
+**Conclusion: there is no hard OAuth blocker.** Unlike what might be assumed
+(GCP auth is OAuth2/service-account-centric, unlike AWS's simpler
+access-key model), the `hashicorp/google` provider accepts a plain
+`access_token` string with zero validation against Google's real OAuth
+servers, and happily sends all subsequent API calls to whatever
+`*_custom_endpoint` you configure. There was no need for AWS-style
+`skip_credentials_validation` flags — the `access_token` auth path simply
+never validates the token at all; it's used purely as a bearer token sent on
+each request, which our mock can (and must) just ignore/accept.
+
+This means: **the entire approach is viable**, for every GCP service the
+provider has a `*_custom_endpoint` setting for (this covers the large
+majority of resources, including `compute_custom_endpoint` for Compute
+Engine/VPC resources — not yet tested empirically but the same auth
+mechanism applies, since `access_token` is provider-wide, not
+per-service).
+
+## 2026-10-09 — Phase 0 outcome / what's next
+
+No blocker. Phase 1 (building real fidelity for VPC and Compute Engine, and
+wrapping fake-gcs-server for Storage) is a green light, but is substantial,
+multi-session implementation work — each service needs the exact request/
+response JSON schema the real provider sends/expects brought into
+conformance, not just enough to pass one trivial probe. Scoped as the next
+phase of this effort; see PLAN.md for milestones. The empirical method
+established here (real `fake-gcs-server`/real-provider probe, verified via
+direct API call rather than trusting Terraform's own output) is the
+template every subsequent resource's "done" claim must meet.

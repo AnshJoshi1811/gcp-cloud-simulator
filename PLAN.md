@@ -52,3 +52,60 @@ commit, push.
 - Small, frequent commits; push immediately after each.
 - Never crash on unsupported calls — return GCP/AWS-shaped JSON errors.
 - Ambiguity -> pick the sensible default, log it, keep moving.
+
+---
+
+## Deliverable 3 — gcp-cloud-simulator as a genuine "moto for GCP" (this branch: `feature/terraform-google-provider`)
+
+Goal: real, wire-protocol-faithful compatibility with the unmodified
+`hashicorp/google` Terraform provider — the same empirical bar MiniCloud met
+for `hashicorp/aws` via moto. Full rationale and the Phase 0 research in
+`DECISIONS.md`'s "Terraform / google-provider compatibility" section below
+Deliverable 1's entries.
+
+### Phase 0 — Research (DONE)
+- No mature general-purpose "moto for GCP" exists (`drongo` is architecturally
+  irrelevant to Terraform — it patches Python clients, not an HTTP server).
+- `fake-gcs-server` (fsouza/fake-gcs-server) is a mature, real GCS wire-protocol
+  emulator — adopt it for Storage instead of hand-rolling.
+- No mature emulator exists for Compute Engine or VPC — must hand-build.
+- **Empirically verified, not just researched**: the real `hashicorp/google`
+  provider works against a local mock with zero real OAuth — a plain
+  `access_token = "dummy-..."` plus a `*_custom_endpoint` override is
+  sufficient. Full probe in `terraform-examples/gcs-probe/`, verified via
+  `init -> apply -> direct curl verification -> destroy` against a real
+  `fake-gcs-server` container. **No blocker.**
+
+### Phase 1 — Build real fidelity, in priority order (finish each with a verified `init -> apply -> destroy` cycle before the next)
+
+1. **Cloud Storage**: wrap this repo's existing `backend/app/api/storage.py` /
+   `backend/app/services/storage/` behind (or replace with a proxy to) a
+   Docker-managed `fake-gcs-server` instance, so `google_storage_bucket` /
+   `google_storage_bucket_object` work via genuine GCS wire-protocol fidelity
+   rather than hand-rolled JSON shapes. Reuse `docker_manager.py`'s container
+   lifecycle patterns (this repo already has one; MiniCloud's is a close
+   cousin) to run/manage the `fake-gcs-server` container itself.
+2. **VPC Networks / Subnetworks** (`google_compute_network`,
+   `google_compute_subnetwork`): no mature emulator exists; bring
+   `backend/app/services/vpc/` into exact GCE REST API conformance
+   (`compute_custom_endpoint`), including the async Operation-resource
+   pattern described below.
+3. **Compute Engine instances** (`google_compute_instance`): the hardest and
+   most valuable. GCE's real API is asynchronous — `instances.insert`
+   returns a `zone-scoped Operation` resource immediately, and the provider
+   polls `GET .../operations/{name}` until `status: DONE`. Getting this
+   polling contract exactly right is probably the single biggest fidelity
+   gap versus today's synchronous hand-rolled implementation — treat it as
+   its own sub-milestone before worrying about instance fields.
+
+Architecture: keep protocol-fidelity logic (request parsing, response
+shaping, Operation state machines) separated from FastAPI routing glue,
+mirroring moto's own backend/model-vs-server split — apply this per service
+as each is brought to conformance, not as a big-bang refactor.
+
+### Verification bar
+Every "done" claim needs a real `terraform-examples/<resource>/` config, run
+against the real `terraform` binary (in WSL, where Docker also lives) with
+actual verification (direct API call or `docker ps`, not just Terraform's own
+exit code) — the same bar the `gcs-probe` established and MiniCloud was held
+to.
