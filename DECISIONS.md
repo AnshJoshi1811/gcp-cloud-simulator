@@ -306,3 +306,47 @@ IMPLEMENTATION_TRACKER.md and README.md updated accordingly.
 Next: VPC Networks/Subnetworks (Phase 1, item 2) — no mature emulator
 exists for this, so it needs to be hand-built to real GCE REST API
 conformance rather than proxied to something else.
+
+## 2026-10-09 — Post-merge-prep: two gcs_proxy bugs found by CI, both fixed and verified
+
+Merging this branch with `main` (which now has real CI, added in the
+production-restructuring PR) surfaced two real bugs in the Storage proxy
+that manual testing (against the exact paths Terraform itself uses) had
+missed:
+
+1. **Missing route**: `POST /storage/v1/b/{bucket}/o` (real GCS's "simple
+   upload" convention — `uploadType=media&name=...` on the metadata path,
+   as opposed to the dedicated `/upload/storage/v1/...` endpoint) wasn't
+   proxied at all, so it fell through to the legacy hand-rolled
+   `backend/app/api/storage.py` handler — which has its own separate
+   bucket registry that never learns about buckets created via the new
+   fake-gcs-server proxy. Result: uploads via this convention 404'd
+   against buckets that genuinely exist from the proxy's point of view.
+   `gcloud`/older SDKs use this convention; Terraform does not (it uses
+   `/upload/...` directly), which is why the original Terraform-only
+   verification didn't catch it.
+2. **Wrong target path**: the first fix for #1 forwarded the bare path
+   verbatim to fake-gcs-server — which, verified directly (`curl` against
+   a throwaway instance), does NOT implement inserts on that bare path at
+   all (404), only under `/upload/storage/v1/b/{bucket}/o`. Fixed by
+   translating the request to the path fake-gcs-server actually serves,
+   regardless of which convention the caller used.
+
+Both confirmed via the exact test that caught them
+(`tests/integration/test_storage.py::TestObjects::test_upload_object`)
+returning to its pre-existing passing state, verified in GitHub Actions
+(not just locally) after each fix. Lesson: Terraform-cycle verification
+proves Terraform compatibility specifically — it does not substitute for
+running the existing integration test suite, which exercises conventions
+Terraform itself never uses. CI (new as of the production-restructuring
+PR) caught this the moment it existed; doing both together surfaced real
+coverage gaps neither effort would have caught alone.
+
+**Known pre-existing, unrelated-to-this-branch test failures**: 5 tests
+fail (`test_apigateway`, `test_compute::test_list_zones`,
+`test_functions` x2, `test_vpc::test_create_firewall_rule`) on both `main`
+and this branch identically — confirmed by diffing this branch's CI
+summary against `main`'s own CI run (identical 5 failures, identical
+count). These predate any work in this PR; filed as
+[issue #5](https://github.com/AnshJoshi1811/gcp-cloud-simulator/issues/5)
+rather than silently merged past.
