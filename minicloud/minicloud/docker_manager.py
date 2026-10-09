@@ -36,9 +36,23 @@ def ensure_network(name: str, cidr: Optional[str] = None) -> str:
     ipam = None
     if cidr:
         ipam = docker.types.IPAMConfig(pool_configs=[docker.types.IPAMPool(subnet=cidr)])
-    net = client.networks.create(
-        name, driver="bridge", ipam=ipam, labels={LABEL_MANAGED: "true", LABEL_RESOURCE_TYPE: "vpc"}
-    )
+    try:
+        net = client.networks.create(
+            name, driver="bridge", ipam=ipam, labels={LABEL_MANAGED: "true", LABEL_RESOURCE_TYPE: "vpc"}
+        )
+    except docker.errors.APIError as e:
+        # The VPC's CIDR (often moto's default 172.31.0.0/16) can overlap
+        # with Docker's own address pools or another existing network.
+        # The VPC-mapping is best-effort for IP addressing purposes anyway;
+        # fall back to letting Docker auto-assign a non-conflicting subnet
+        # rather than failing the whole reconciliation pass.
+        if "overlaps" in str(e).lower() and ipam is not None:
+            logger.warning(f"Network {name}: requested subnet {cidr} overlaps an existing pool, letting Docker auto-assign instead")
+            net = client.networks.create(
+                name, driver="bridge", labels={LABEL_MANAGED: "true", LABEL_RESOURCE_TYPE: "vpc"}
+            )
+        else:
+            raise
     return net.id
 
 
@@ -88,8 +102,12 @@ def run_instance_container(
     if user_data:
         # Run the user's startup script, then keep the container alive so it
         # keeps representing a "running instance" the way a real EC2 host would.
-        escaped = user_data.replace("'", "'\\''")
-        command = f"sh -c '{escaped} ; sleep infinity'"
+        # user_data commonly ends in a trailing newline (heredoc scripts
+        # always do); strip it so the appended "; sleep infinity" doesn't
+        # land on its own line starting with a bare ";", which POSIX sh
+        # (dash, Ubuntu's default /bin/sh) rejects as a syntax error.
+        escaped = user_data.rstrip("\n").replace("'", "'\\''")
+        command = f"sh -c '{escaped}\nsleep infinity'"
 
     all_labels = {LABEL_MANAGED: "true", LABEL_RESOURCE_TYPE: "ec2_instance", **(labels or {})}
 

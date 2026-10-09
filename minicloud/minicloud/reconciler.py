@@ -57,13 +57,21 @@ def _limits_for_instance_type(instance_type: str):
     return INSTANCE_TYPE_LIMITS.get(instance_type, (1, 512))
 
 
-def _decode_user_data(user_data: Optional[str]) -> Optional[str]:
+def _decode_user_data(user_data) -> Optional[str]:
     if not user_data:
         return None
+    # moto represents EC2 user_data as a Base64EncodedString object (not a
+    # plain str) with its own .decode(); plain strings fall through to the
+    # manual base64 decode below.
+    if hasattr(user_data, "decode") and not isinstance(user_data, (str, bytes)):
+        try:
+            return user_data.decode("utf-8")
+        except Exception:
+            pass
     try:
         return base64.b64decode(user_data).decode("utf-8", errors="replace")
     except Exception:
-        return user_data
+        return str(user_data)
 
 
 def _published_ports_for_security_groups(instance) -> Dict[int, int]:
@@ -125,16 +133,24 @@ class Reconciler:
             existing = state_db.get_resource(vpc_id)
             if existing:
                 continue
-            network_id = docker_manager.ensure_network(network_name, getattr(vpc, "cidr_block", None))
-            state_db.upsert_resource(vpc_id, "vpc", docker_id=network_id, docker_name=network_name)
-            logger.info(f"Reconciled VPC {vpc_id} -> Docker network {network_name}")
+            try:
+                network_id = docker_manager.ensure_network(network_name, getattr(vpc, "cidr_block", None))
+                state_db.upsert_resource(vpc_id, "vpc", docker_id=network_id, docker_name=network_name)
+                logger.info(f"Reconciled VPC {vpc_id} -> Docker network {network_name}")
+            except Exception:
+                # One VPC failing to map to a Docker network must not block
+                # every other VPC or any EC2 instance from reconciling.
+                logger.exception(f"Failed to reconcile VPC {vpc_id}, will retry next pass")
 
     def _reconcile_instances(self, backend):
         live_instance_ids = set()
         for reservation in backend.reservations.values():
             for instance in reservation.instances:
                 live_instance_ids.add(instance.id)
-                self._reconcile_one_instance(instance)
+                try:
+                    self._reconcile_one_instance(instance)
+                except Exception:
+                    logger.exception(f"Failed to reconcile instance {instance.id}, will retry next pass")
 
         # Containers for instances moto no longer tracks at all (shouldn't
         # normally happen — terminated instances stay in reservations with
