@@ -157,7 +157,7 @@ class TestFirewallValidation:
     def test_create_firewall_rule_invalid_priority(self, api_client, test_project):
         path = f"/compute/v1/projects/{test_project}/global/firewalls"
         payload = {
-            "name": f"invalid-priority-{datetime.now().strftime('%s')}",
+            "name": f"invalid-priority-{int(datetime.now().timestamp())}",
             "network": "default",
             "direction": "INGRESS",
             "priority": 70000,
@@ -170,7 +170,7 @@ class TestFirewallValidation:
     def test_create_firewall_rule_invalid_direction(self, api_client, test_project):
         path = f"/compute/v1/projects/{test_project}/global/firewalls"
         payload = {
-            "name": f"invalid-direction-{datetime.now().strftime('%s')}",
+            "name": f"invalid-direction-{int(datetime.now().timestamp())}",
             "network": "default",
             "direction": "SIDEWAYS",
             "priority": 1000,
@@ -183,7 +183,7 @@ class TestFirewallValidation:
     def test_create_firewall_rule_invalid_cidr(self, api_client, test_project):
         path = f"/compute/v1/projects/{test_project}/global/firewalls"
         payload = {
-            "name": f"invalid-cidr-{datetime.now().strftime('%s')}",
+            "name": f"invalid-cidr-{int(datetime.now().timestamp())}",
             "network": "default",
             "direction": "INGRESS",
             "priority": 1000,
@@ -195,7 +195,7 @@ class TestFirewallValidation:
 
     def test_patch_firewall_rule_priority(self, api_client, test_project):
         create_path = f"/compute/v1/projects/{test_project}/global/firewalls"
-        rule_name = f"patch-priority-{datetime.now().strftime('%s')}"
+        rule_name = f"patch-priority-{int(datetime.now().timestamp())}"
         create_payload = {
             "name": rule_name,
             "network": "default",
@@ -218,7 +218,7 @@ class TestFirewallValidation:
     def test_firewall_rules_list_by_network(self, api_client, test_project):
         net_name = "default"
         firewall_path = f"/compute/v1/projects/{test_project}/global/firewalls"
-        rule_name = f"filter-by-network-{datetime.now().strftime('%s')}"
+        rule_name = f"filter-by-network-{int(datetime.now().timestamp())}"
         create_fw_resp = api_client.post(
             firewall_path,
             {

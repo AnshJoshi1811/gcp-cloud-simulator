@@ -239,7 +239,7 @@ export default function PubSubDashboardPage() {
       const messages = await pullMessages(pullSubscription, 10, true);
       setPulledMessages(messages);
       if (messages.length === 0) {
-        toast.info('No messages available');
+        toast('No messages available');
       } else {
         toast.success(`Pulled ${messages.length} message(s)`);
       }

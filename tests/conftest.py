@@ -282,7 +282,7 @@ def cleanup_resources():
 def sample_instance_payload() -> Dict[str, Any]:
     """Sample VM instance creation payload"""
     return {
-        "name": f"test-instance-{datetime.now().strftime('%s')}",
+        "name": f"test-instance-{int(datetime.now().timestamp())}",
         "machineType": "e2-medium",
         "zone": TEST_ZONE,
         "networkInterfaces": [
@@ -298,7 +298,7 @@ def sample_instance_payload() -> Dict[str, Any]:
 def sample_network_payload() -> Dict[str, Any]:
     """Sample VPC network creation payload"""
     return {
-        "name": f"test-vpc-{datetime.now().strftime('%s')}",
+        "name": f"test-vpc-{int(datetime.now().timestamp())}",
         "autoCreateSubnetworks": True,
         "description": "Test VPC network"
     }
@@ -308,7 +308,7 @@ def sample_network_payload() -> Dict[str, Any]:
 def sample_bucket_payload() -> Dict[str, Any]:
     """Sample Cloud Storage bucket creation payload"""
     return {
-        "name": f"test-bucket-{datetime.now().strftime('%s')}",
+        "name": f"test-bucket-{int(datetime.now().timestamp())}",
         "location": TEST_REGION,
         "storageClass": "STANDARD"
     }
@@ -318,7 +318,7 @@ def sample_bucket_payload() -> Dict[str, Any]:
 def sample_firewall_payload() -> Dict[str, Any]:
     """Sample firewall rule creation payload"""
     return {
-        "name": f"test-rule-{datetime.now().strftime('%s')}",
+        "name": f"test-rule-{int(datetime.now().timestamp())}",
         "network": "default",
         "priority": 1000,
         "direction": "INGRESS",
@@ -337,7 +337,7 @@ def sample_cluster_payload() -> Dict[str, Any]:
     """Sample GKE cluster creation payload"""
     return {
         "cluster": {
-            "name": f"test-cluster-{datetime.now().strftime('%s')}",
+            "name": f"test-cluster-{int(datetime.now().timestamp())}",
             "initialNodeCount": 3,
             "description": "Test GKE cluster",
             "nodeConfig": {

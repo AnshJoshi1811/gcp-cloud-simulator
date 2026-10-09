@@ -33,6 +33,8 @@ import PubSubDashboardPage from './pages/PubSubDashboardPage';
 import SecretManagerDashboardPage from './pages/SecretManagerDashboardPage';
 import SecretDetailPage from './pages/SecretDetailPage';
 import AutoscalingDashboardPage from './pages/AutoscalingDashboardPage';
+import KMSDashboardPage from './pages/KMSDashboardPage';
+import TasksDashboardPage from './pages/TasksDashboardPage';
 
 function App() {
   return (
@@ -118,7 +120,17 @@ function App() {
             <Route path="/services/autoscaling">
               <Route index element={<AutoscalingDashboardPage />} />
             </Route>
-            
+
+            {/* Cloud KMS Service Routes */}
+            <Route path="/services/kms">
+              <Route index element={<KMSDashboardPage />} />
+            </Route>
+
+            {/* Cloud Tasks Service Routes */}
+            <Route path="/services/tasks">
+              <Route index element={<TasksDashboardPage />} />
+            </Route>
+
             {/* Legacy VPC route redirect */}
             <Route path="/services/vpc/networks" element={<Navigate to="/services/vpc" replace />} />
 

@@ -20,6 +20,8 @@ from app.services.pubsub.router import router as pubsub_router
 from app.services.autoscaling.router import router as autoscaling_router, storage as autoscaling_storage
 from app.services.autoscaling.evaluator import AutoscalingEvaluator
 from app.services.secretmanager.router import router as secretmanager_router
+from app.services.kms.router import router as kms_router
+from app.services.tasks.router import router as tasks_router
 from app.api import storage  # storage remains in api/ (stable, 1100+ lines)
 import os
 
@@ -94,6 +96,14 @@ app.include_router(autoscaling_router, prefix="/compute/v1", tags=["Autoscaling"
 # Secret Manager — secretmanager.googleapis.com/v1
 app.include_router(secretmanager_router, prefix="/v1", tags=["Secret Manager"])
 app.include_router(secretmanager_router, prefix="/secretmanager/v1", tags=["Secret Manager (alt)"])
+
+# Cloud KMS — cloudkms.googleapis.com/v1
+app.include_router(kms_router, prefix="/v1", tags=["Cloud KMS"])
+app.include_router(kms_router, prefix="/cloudkms/v1", tags=["Cloud KMS (alt)"])
+
+# Cloud Tasks — cloudtasks.googleapis.com/v2
+app.include_router(tasks_router, prefix="/v2", tags=["Cloud Tasks"])
+app.include_router(tasks_router, prefix="/cloudtasks/v2", tags=["Cloud Tasks (alt)"])
 
 
 def init_zones_and_machine_types(db):

@@ -1,4 +1,4 @@
-import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge } from 'lucide-react';
+import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks } from 'lucide-react';
 
 export interface ServiceLink {
   label: string;
@@ -174,6 +174,36 @@ export const serviceCategories: ServiceCategory[] = [
         sidebarLinks: [
           { label: 'Dashboard', path: '/services/secretmanager', icon: Key },
           { label: 'Secrets', path: '/services/secretmanager', icon: Key },
+        ],
+      },
+      {
+        id: 'kms',
+        name: 'Cloud KMS',
+        description: 'Manage encryption keys and encrypt/decrypt data',
+        icon: KeyRound,
+        category: 'Security',
+        enabled: true,
+        sidebarLinks: [
+          { label: 'Dashboard', path: '/services/kms', icon: KeyRound },
+          { label: 'Key Rings', path: '/services/kms', icon: KeyRound },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'integration',
+    name: 'Application Integration',
+    services: [
+      {
+        id: 'tasks',
+        name: 'Cloud Tasks',
+        description: 'Managed task queues for asynchronous execution',
+        icon: ListChecks,
+        category: 'Application Integration',
+        enabled: true,
+        sidebarLinks: [
+          { label: 'Dashboard', path: '/services/tasks', icon: ListChecks },
+          { label: 'Queues', path: '/services/tasks', icon: ListChecks },
         ],
       },
     ],
