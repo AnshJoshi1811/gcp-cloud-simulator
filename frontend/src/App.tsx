@@ -37,6 +37,7 @@ import KMSDashboardPage from './pages/KMSDashboardPage';
 import TasksDashboardPage from './pages/TasksDashboardPage';
 import SqlDashboardPage from './pages/SqlDashboardPage';
 import MemorystoreDashboardPage from './pages/MemorystoreDashboardPage';
+import FirestoreDashboardPage from './pages/FirestoreDashboardPage';
 
 function App() {
   return (
@@ -141,6 +142,11 @@ function App() {
             {/* Memorystore Service Routes */}
             <Route path="/services/memorystore">
               <Route index element={<MemorystoreDashboardPage />} />
+            </Route>
+
+            {/* Firestore Service Routes */}
+            <Route path="/services/firestore">
+              <Route index element={<FirestoreDashboardPage />} />
             </Route>
 
             {/* Legacy VPC route redirect */}

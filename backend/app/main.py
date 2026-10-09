@@ -24,6 +24,7 @@ from app.services.kms.router import router as kms_router
 from app.services.tasks.router import router as tasks_router
 from app.services.sql.router import router as sql_router
 from app.services.memorystore.router import router as memorystore_router
+from app.services.firestore.router import router as firestore_router
 from app.api import storage  # storage remains in api/ (stable, 1100+ lines)
 import os
 
@@ -114,6 +115,10 @@ app.include_router(sql_router, prefix="/sqladmin/v1", tags=["Cloud SQL (alt)"])
 # Memorystore — redis.googleapis.com/v1
 app.include_router(memorystore_router, prefix="/v1", tags=["Memorystore"])
 app.include_router(memorystore_router, prefix="/redis/v1", tags=["Memorystore (alt)"])
+
+# Firestore — firestore.googleapis.com/v1
+app.include_router(firestore_router, prefix="/v1", tags=["Firestore"])
+app.include_router(firestore_router, prefix="/firestore/v1", tags=["Firestore (alt)"])
 
 
 def init_zones_and_machine_types(db):

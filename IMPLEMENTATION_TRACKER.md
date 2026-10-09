@@ -8,12 +8,12 @@
 ## 📋 EXECUTIVE SUMMARY
 
 **Current Implementation Status (corrected 2026-10-09 — see DECISIONS.md):**
-- ✅ Services Completed: 15 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
+- ✅ Services Completed: 17 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
   Pub/Sub, Monitoring, Autoscaling, Artifact Registry, Secret Manager, Cloud KMS,
-  Cloud Tasks, Cloud SQL, Memorystore)
+  Cloud Tasks, Cloud SQL, Memorystore, Firestore)
 - 🟡 Services Partially Done: 1 (Service Management)
-- ❌ Services Not Started: 10
-- 📊 Overall Coverage: 15/26 complete (58%)
+- ❌ Services Not Started: 8
+- 📊 Overall Coverage: 17/26 complete (65%)
 
 Note: this table previously undercounted completed work (e.g. listed Secret Manager
 as "not started" when it was already fully implemented in `backend/app/services/`).
@@ -105,7 +105,7 @@ Rows below are being corrected as each service is verified against the live code
 | **TIER 3: DATA/MESSAGING/MONITORING** (Depends on Tier 2) | | | | | | | | | |
 | 10 | Cloud SQL | VPC, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 5 days | - | Postgres/MySQL via Docker (stub mode without Docker) — DONE 2026-10-09 |
 | 11 | Memorystore | VPC, Compute | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 4 days | - | Redis via Docker (stub mode without Docker) — DONE 2026-10-09 |
-| 12 | Firestore | IAM | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 4 days | **MEDIUM** | NoSQL document DB |
+| 12 | Firestore | IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 4 days | - | In-memory document store, typed-value wire format, basic structuredQuery — DONE 2026-10-09 |
 | 13 | GKE | VPC, Compute, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 8 days | - | Kubernetes clusters |
 | 14 | Cloud Run | Artifact Reg, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 5 days | - | Container services |
 | 15 | Cloud Pub/Sub | IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 6 days | - | Topic/subscriptions ✅ JUST DONE |
