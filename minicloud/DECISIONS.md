@@ -125,3 +125,39 @@ Installed v1.9.8 instead via direct binary download
 (releases.hashicorp.com) into the user's own `~/bin`, which needs no
 elevation. `minicloud init-terraform` documents this same fallback for
 end users who hit the same no-admin situation.
+
+## 2026-10-09 — Real Docker verification (follow-up session, WSL Ubuntu 24.04)
+The caveat above — that only stub-mode had ever been exercised — turned
+out to matter: running the exact same code against a real Docker daemon
+(WSL2, not this sandbox) immediately surfaced three bugs that stub mode's
+fake-id short-circuit had been silently masking:
+
+1. `_decode_user_data` called `base64.b64decode()` on moto's
+   `Base64EncodedString` user_data object (not a plain `str`); the decode
+   silently raised, was swallowed by a bare `except Exception: return
+   user_data`, and the un-decoded object reached
+   `docker_manager.run_instance_container`'s `.replace()` call, crashing
+   *every* reconciliation pass before any container was ever created.
+2. That crash was fatal to the whole pass (`reconcile_once` had no
+   per-resource isolation), so one broken instance or VPC blocked
+   reconciliation of everything else, every single poll.
+3. moto's default VPC CIDR (`172.31.0.0/16`) collided with Docker's own
+   address pools on this machine, making `ensure_network` fail outright
+   with no fallback.
+4. Once containers did get created, `user_data`'s trailing newline (from
+   Terraform's heredoc syntax, which is the norm) plus the literal
+   `" ; sleep infinity"` suffix put a bare `;` on its own line — a syntax
+   error under POSIX `sh` (dash) — so every container exited immediately
+   instead of staying up.
+
+All four fixed (see the "Fix 3 real Docker-path bugs..." commit —
+counted as 3 fixes since #1 and #2 were one conceptual gap: no error
+isolation anywhere in the reconcile loop). Re-verified afterward: real
+`terraform init -> apply -> destroy` against a live Docker daemon for
+all three examples, confirming via `docker ps`/`docker logs` (not just
+Terraform's own success output) that containers actually run,
+`user_data` actually executes inside them, security-group ingress rules
+actually become published Docker ports, and `destroy` actually removes
+the containers. The lesson generalizes: stub mode is good for keeping
+the server alive without Docker, but it is not a substitute for running
+the real path at least once before calling a Docker-backed feature done.
