@@ -108,6 +108,17 @@ async def list_objects(request: Request, bucket: str):
     return await _proxy(request, f"/storage/v1/b/{bucket}/o")
 
 
+@router.post("/storage/v1/b/{bucket}/o")
+async def insert_object(request: Request, bucket: str):
+    # Real GCS supports a "simple upload" convention on this same metadata
+    # path (POST .../o?uploadType=media&name=...) in addition to the
+    # dedicated /upload/storage/v1/... endpoint below. Some clients
+    # (gcloud, older SDKs) use this path; proxy it too so buckets created
+    # here are reachable the same way regardless of which upload style a
+    # caller uses.
+    return await _proxy(request, f"/storage/v1/b/{bucket}/o")
+
+
 @router.get("/storage/v1/b/{bucket}/o/{object_name:path}")
 async def get_object(request: Request, bucket: str, object_name: str):
     return await _proxy(request, f"/storage/v1/b/{bucket}/o/{object_name}")
