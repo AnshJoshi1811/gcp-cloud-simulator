@@ -110,13 +110,15 @@ async def list_objects(request: Request, bucket: str):
 
 @router.post("/storage/v1/b/{bucket}/o")
 async def insert_object(request: Request, bucket: str):
-    # Real GCS supports a "simple upload" convention on this same metadata
-    # path (POST .../o?uploadType=media&name=...) in addition to the
-    # dedicated /upload/storage/v1/... endpoint below. Some clients
-    # (gcloud, older SDKs) use this path; proxy it too so buckets created
-    # here are reachable the same way regardless of which upload style a
-    # caller uses.
-    return await _proxy(request, f"/storage/v1/b/{bucket}/o")
+    # Real GCS accepts a "simple upload" on this same metadata path
+    # (POST .../o?uploadType=media&name=...), but fake-gcs-server only
+    # implements inserts under the dedicated /upload/storage/v1/...
+    # endpoint (verified directly: the bare path 404s, the /upload/ path
+    # works) - translate the convention rather than forwarding verbatim,
+    # so clients using either path (gcloud/older SDKs use this bare one;
+    # Terraform uses /upload/ directly, see upload_object below) land on
+    # the one path fake-gcs-server actually serves.
+    return await _proxy(request, f"/upload/storage/v1/b/{bucket}/o")
 
 
 @router.get("/storage/v1/b/{bucket}/o/{object_name:path}")
