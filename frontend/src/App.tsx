@@ -42,6 +42,7 @@ import LoggingDashboardPage from './pages/LoggingDashboardPage';
 import LoadBalancerDashboardPage from './pages/LoadBalancerDashboardPage';
 import FunctionsDashboardPage from './pages/FunctionsDashboardPage';
 import ApiGatewayDashboardPage from './pages/ApiGatewayDashboardPage';
+import IdentityDashboardPage from './pages/IdentityDashboardPage';
 
 function App() {
   return (
@@ -171,6 +172,11 @@ function App() {
             {/* API Gateway Service Routes */}
             <Route path="/services/apigateway">
               <Route index element={<ApiGatewayDashboardPage />} />
+            </Route>
+
+            {/* Cloud Identity Platform Service Routes */}
+            <Route path="/services/identity">
+              <Route index element={<IdentityDashboardPage />} />
             </Route>
 
             {/* Legacy VPC route redirect */}

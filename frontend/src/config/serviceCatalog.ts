@@ -1,4 +1,4 @@
-import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree, ScrollText, Workflow, Zap, Router as RouterIcon } from 'lucide-react';
+import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree, ScrollText, Workflow, Zap, Router as RouterIcon, UserCircle } from 'lucide-react';
 
 export interface ServiceLink {
   label: string;
@@ -107,6 +107,17 @@ export const serviceCategories: ServiceCategory[] = [
           { label: 'Dashboard', path: '/services/iam' },
           { label: 'Service Accounts', path: '/services/iam/service-accounts', icon: Shield },
           { label: 'IAM Policies', path: '/services/iam/policies' },
+        ],
+      },
+      {
+        id: 'identity',
+        name: 'Cloud Identity Platform',
+        description: 'End-user authentication (sign-up / sign-in) per project',
+        icon: UserCircle,
+        category: 'IAM & Admin',
+        enabled: true,
+        sidebarLinks: [
+          { label: 'Users', path: '/services/identity', icon: UserCircle },
         ],
       },
     ],

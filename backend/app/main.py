@@ -29,6 +29,7 @@ from app.services.cloudlogging.router import router as logging_router
 from app.services.loadbalancer.router import router as loadbalancer_router
 from app.services.functions.router import router as functions_router
 from app.services.apigateway.router import router as apigateway_router
+from app.services.identity.router import router as identity_router
 from app.api import storage  # storage remains in api/ (stable, 1100+ lines)
 import os
 
@@ -136,6 +137,9 @@ app.include_router(functions_router, prefix="/functions/v1", tags=["Cloud Functi
 
 # API Gateway — apigateway.googleapis.com/v1 (+ a local proxy/invoke endpoint)
 app.include_router(apigateway_router, prefix="/apigateway/v1", tags=["API Gateway"])
+
+# Cloud Identity Platform — identitytoolkit.googleapis.com/v1
+app.include_router(identity_router, prefix="/identitytoolkit/v1", tags=["Cloud Identity Platform"])
 
 
 def init_zones_and_machine_types(db):
