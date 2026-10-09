@@ -224,6 +224,18 @@ export const serviceCategories: ServiceCategory[] = [
           { label: 'Instances', path: '/services/sql', icon: Database },
         ],
       },
+      {
+        id: 'memorystore',
+        name: 'Memorystore',
+        description: 'Managed Redis instances for caching',
+        icon: Gauge,
+        category: 'Databases',
+        enabled: true,
+        sidebarLinks: [
+          { label: 'Dashboard', path: '/services/memorystore', icon: Gauge },
+          { label: 'Instances', path: '/services/memorystore', icon: Gauge },
+        ],
+      },
     ],
   },
   {

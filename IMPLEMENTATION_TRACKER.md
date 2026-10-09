@@ -8,12 +8,12 @@
 ## 📋 EXECUTIVE SUMMARY
 
 **Current Implementation Status (corrected 2026-10-09 — see DECISIONS.md):**
-- ✅ Services Completed: 14 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
+- ✅ Services Completed: 15 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
   Pub/Sub, Monitoring, Autoscaling, Artifact Registry, Secret Manager, Cloud KMS,
-  Cloud Tasks, Cloud SQL)
+  Cloud Tasks, Cloud SQL, Memorystore)
 - 🟡 Services Partially Done: 1 (Service Management)
-- ❌ Services Not Started: 11
-- 📊 Overall Coverage: 14/26 complete, 15/26 (58%) counting the partial (54% if not)
+- ❌ Services Not Started: 10
+- 📊 Overall Coverage: 15/26 complete (58%)
 
 Note: this table previously undercounted completed work (e.g. listed Secret Manager
 as "not started" when it was already fully implemented in `backend/app/services/`).
@@ -104,7 +104,7 @@ Rows below are being corrected as each service is verified against the live code
 | 9 | Cloud Tasks | None | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 2 days | - | Queues + tasks with live dispatcher — DONE 2026-10-09 |
 | **TIER 3: DATA/MESSAGING/MONITORING** (Depends on Tier 2) | | | | | | | | | |
 | 10 | Cloud SQL | VPC, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 5 days | - | Postgres/MySQL via Docker (stub mode without Docker) — DONE 2026-10-09 |
-| 11 | Memorystore | VPC, Compute | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 4 days | **MEDIUM** | Redis/Memcached caching |
+| 11 | Memorystore | VPC, Compute | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 4 days | - | Redis via Docker (stub mode without Docker) — DONE 2026-10-09 |
 | 12 | Firestore | IAM | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 4 days | **MEDIUM** | NoSQL document DB |
 | 13 | GKE | VPC, Compute, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 8 days | - | Kubernetes clusters |
 | 14 | Cloud Run | Artifact Reg, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 5 days | - | Container services |

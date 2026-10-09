@@ -36,6 +36,7 @@ import AutoscalingDashboardPage from './pages/AutoscalingDashboardPage';
 import KMSDashboardPage from './pages/KMSDashboardPage';
 import TasksDashboardPage from './pages/TasksDashboardPage';
 import SqlDashboardPage from './pages/SqlDashboardPage';
+import MemorystoreDashboardPage from './pages/MemorystoreDashboardPage';
 
 function App() {
   return (
@@ -135,6 +136,11 @@ function App() {
             {/* Cloud SQL Service Routes */}
             <Route path="/services/sql">
               <Route index element={<SqlDashboardPage />} />
+            </Route>
+
+            {/* Memorystore Service Routes */}
+            <Route path="/services/memorystore">
+              <Route index element={<MemorystoreDashboardPage />} />
             </Route>
 
             {/* Legacy VPC route redirect */}
