@@ -30,6 +30,7 @@ from app.services.loadbalancer.router import router as loadbalancer_router
 from app.services.functions.router import router as functions_router
 from app.services.apigateway.router import router as apigateway_router
 from app.services.identity.router import router as identity_router
+from app.services.cdn.router import router as cdn_router
 from app.api import storage  # storage remains in api/ (stable, 1100+ lines)
 import os
 
@@ -140,6 +141,10 @@ app.include_router(apigateway_router, prefix="/apigateway/v1", tags=["API Gatewa
 
 # Cloud Identity Platform — identitytoolkit.googleapis.com/v1
 app.include_router(identity_router, prefix="/identitytoolkit/v1", tags=["Cloud Identity Platform"])
+
+# Cloud CDN — compute.googleapis.com/compute/v1 backendBuckets (+ a local content-serving endpoint)
+app.include_router(cdn_router, prefix="/compute/v1", tags=["Cloud CDN"])
+app.include_router(cdn_router, prefix="/cdn/v1", tags=["Cloud CDN (content)"])
 
 
 def init_zones_and_machine_types(db):

@@ -12,6 +12,7 @@ swallowed).
 """
 
 from typing import Any, Dict
+import asyncio
 import logging
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -174,7 +175,7 @@ async def simulate_request(project: str, name: str, db: Session = Depends(get_db
 
     url = f"http://{instance.internal_ip}:{backend.port}/"
     try:
-        resp = requests.get(url, timeout=3)
+        resp = await asyncio.to_thread(requests.get, url, timeout=3)
         return {"routedTo": backend.instance_name, "healthy": resp.ok, "statusCode": resp.status_code}
     except Exception as e:
         return {"routedTo": backend.instance_name, "healthy": False, "error": str(e)}

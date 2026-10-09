@@ -9,6 +9,7 @@ the functions service) or to an arbitrary backend URL.
 """
 
 from typing import Any, Dict, Optional
+import asyncio
 import logging
 
 from fastapi import APIRouter, HTTPException, Request
@@ -114,7 +115,12 @@ async def proxy_request(project: str, gateway_id: str, proxy_path: str, request:
         import requests
 
         try:
-            resp = requests.request(request.method, route.backend_url, json=body, timeout=10)
+            # Run on a worker thread: backend_url can point back at this same
+            # server, and uvicorn's single event loop would deadlock waiting
+            # on itself if this blocking call ran inline.
+            resp = await asyncio.to_thread(
+                requests.request, request.method, route.backend_url, json=body, timeout=10
+            )
             try:
                 return resp.json()
             except ValueError:

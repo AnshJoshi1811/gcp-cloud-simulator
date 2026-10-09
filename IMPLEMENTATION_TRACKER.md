@@ -8,13 +8,13 @@
 ## 📋 EXECUTIVE SUMMARY
 
 **Current Implementation Status (corrected 2026-10-09 — see DECISIONS.md):**
-- ✅ Services Completed: 22 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
+- ✅ Services Completed: 23 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
   Pub/Sub, Monitoring, Autoscaling, Artifact Registry, Secret Manager, Cloud KMS,
   Cloud Tasks, Cloud SQL, Memorystore, Firestore, Cloud Logging, Cloud Load Balancer,
-  Cloud Functions, API Gateway, Cloud Identity Platform)
+  Cloud Functions, API Gateway, Cloud Identity Platform, Cloud CDN)
 - 🟡 Services Partially Done: 1 (Service Management)
-- ❌ Services Not Started: 3
-- 📊 Overall Coverage: 22/26 complete (85%)
+- ❌ Services Not Started: 2 (Event Routing, Deployment Manager — see DECISIONS.md)
+- 📊 Overall Coverage: 23/26 complete (88%)
 
 Note: this table previously undercounted completed work (e.g. listed Secret Manager
 as "not started" when it was already fully implemented in `backend/app/services/`).
@@ -122,7 +122,7 @@ Rows below are being corrected as each service is verified against the live code
 | **TIER 5: ORCHESTRATION** (Phase 4+) | | | | | | | | | |
 | 24 | Deployment Manager | **All services** | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | **15 days** | **LOW** | IaC - skip for now |
 | 25 | Event Routing | Pub/Sub, Functions, Tasks | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 12 days | **LOW** | EventBridge equiv - Phase 4 |
-| 26 | Cloud CDN | Cloud Storage, Load Balancer | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 6 days | **LOW** | Content delivery - optional |
+| 26 | Cloud CDN | Cloud Storage, Load Balancer | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 6 days | - | backendBuckets + real in-memory cache fronting actual Storage objects, genuine MISS/HIT + invalidation — DONE 2026-10-09 |
 
 ---
 
