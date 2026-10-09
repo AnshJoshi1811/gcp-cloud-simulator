@@ -33,6 +33,7 @@ from app.services.identity.router import router as identity_router
 from app.services.cdn.router import router as cdn_router
 from app.services.eventarc.router import router as eventarc_router
 from app.api import storage  # storage remains in api/ (stable, 1100+ lines)
+from app.services.storage.gcs_proxy import router as gcs_proxy_router
 import os
 
 app = FastAPI(
@@ -77,7 +78,13 @@ app.include_router(vpc_router, prefix="/compute/v1", tags=["VPC Networks"])
 app.include_router(projects_router, prefix="/cloudresourcemanager/v1", tags=["Projects"])
 app.include_router(iam_router, prefix="/v1", tags=["IAM & Admin"])
 
-# Cloud Storage (in-memory implementation)
+# Cloud Storage — core bucket/object CRUD paths proxy to a real
+# fake-gcs-server instance for genuine GCS wire-protocol fidelity
+# (verified against the real Terraform google provider); registered first
+# so these specific path+method combos are intercepted before falling
+# through to the legacy in-memory implementation below, which still serves
+# everything else (dashboard stats, signed URLs, ACLs, rewrite).
+app.include_router(gcs_proxy_router, tags=["Cloud Storage (fake-gcs-server proxy)"])
 app.include_router(storage.router, tags=["Cloud Storage"])
 
 # GKE — registered at both /container/v1 (internal UI) and /v1 (gcloud CLI compatibility)

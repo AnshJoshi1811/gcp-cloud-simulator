@@ -114,7 +114,8 @@ gcs-emulator/
 
 | Service | Status | Notes |
 |---|---|---|
-| Projects, VPC, Compute Engine, Cloud Storage, IAM | ✅ Complete | Core infra, Docker-backed |
+| Projects, VPC, Compute Engine, IAM | ✅ Complete | Core infra, Docker-backed |
+| Cloud Storage | ✅ Complete | Core bucket/object CRUD proxies to a real `fake-gcs-server` container — genuine GCS wire-protocol fidelity, verified against the real `hashicorp/google` Terraform provider (not just `gcloud`); see DECISIONS.md |
 | GKE, Cloud Run, Artifact Registry | ✅ Complete | |
 | Pub/Sub, Cloud Monitoring, Autoscaling | ✅ Complete | |
 | Secret Manager, Cloud KMS, Cloud Tasks | ✅ Complete | KMS encryption is a local reversible stand-in, not real crypto |
@@ -127,7 +128,7 @@ gcs-emulator/
 | Cloud CDN | ✅ Complete | Real in-memory cache fronting actual Storage objects |
 | Event Routing (Eventarc-style) | ✅ Complete | Real Pub/Sub → Cloud Functions dispatch |
 | Service Management | 🟡 Partial | Left as-is — no real billing to emulate locally, see DECISIONS.md |
-| Deployment Manager | ⬜ Skipped | Deliberate — see DECISIONS.md (MiniCloud covers Terraform/IaC instead) |
+| Deployment Manager | ⬜ Skipped | Deliberate — a GCP-flavored IaC engine isn't worth building here, see DECISIONS.md. Real `hashicorp/google` Terraform provider compatibility is pursued directly (see `feature/terraform-google-provider`), not as a MiniCloud substitute |
 
 Full per-service detail, dependencies, and history: [IMPLEMENTATION_TRACKER.md](IMPLEMENTATION_TRACKER.md).
 Engineering decisions and rationale: [DECISIONS.md](DECISIONS.md).

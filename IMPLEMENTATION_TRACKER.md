@@ -101,7 +101,7 @@ Rows below are being corrected as each service is verified against the live code
 | **TIER 2: INFRASTRUCTURE** (Foundation for all services) | | | | | | | | | |
 | 3 | VPC Networks | None | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 5 days | - | Routing, subnets, firewalls |
 | 4 | Compute Engine | None | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 7 days | - | Instances, zones, machine types |
-| 5 | Cloud Storage | None | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 5 days | - | Buckets, objects, versioning |
+| 5 | Cloud Storage | None | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 5 days | - | Buckets, objects, versioning. Core bucket/object CRUD now proxies to a real `fake-gcs-server` container for genuine GCS wire-protocol fidelity, verified against the real `hashicorp/google` Terraform provider (not just `gcloud` CLI) — see DECISIONS.md — UPDATED 2026-10-09 |
 | 6 | IAM & Admin | None | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 6 days | - | Roles, service accounts |
 | 7 | Secret Manager | None | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 3 days | - | Already implemented, tracker was stale |
 | 8 | Cloud KMS | None | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 3 days | - | Key rings, crypto keys, encrypt/decrypt — DONE 2026-10-09 |

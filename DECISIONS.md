@@ -198,3 +198,52 @@ phase of this effort; see PLAN.md for milestones. The empirical method
 established here (real `fake-gcs-server`/real-provider probe, verified via
 direct API call rather than trusting Terraform's own output) is the
 template every subsequent resource's "done" claim must meet.
+
+## 2026-10-09 — Phase 1 milestone 1: Cloud Storage proxy, DONE and verified
+
+Added `backend/app/services/storage/gcs_proxy.py`: a thin FastAPI proxy for
+the exact GCS wire-protocol paths a Terraform `google_storage_bucket` /
+`google_storage_bucket_object` cycle needs (`/storage/v1/b`,
+`/storage/v1/b/{bucket}`, `/storage/v1/b/{bucket}/o`,
+`/storage/v1/b/{bucket}/o/{object}`, `/upload/storage/v1/b/{bucket}/o`,
+`/download/storage/v1/b/{bucket}/o/{object}`), forwarding verbatim to a
+real, Docker-managed `fake-gcs-server` container
+(`backend/app/core/docker_manager.py`'s new `ensure_fake_gcs_server()`,
+mirroring the existing `ensure_local_registry()` pattern). Registered in
+`main.py` BEFORE the legacy `backend/app/api/storage.py` router, so these
+specific path+method combinations are intercepted first; everything else
+that router still does (dashboard stats, signed URLs, ACLs, rewrite) is
+untouched and keeps working exactly as before — **decision: proxy, don't
+replace**, per the plan already written up above, specifically to avoid
+breaking the existing frontend dashboard, which depends on
+`storage.py`-only endpoints like `/dashboard/stats`.
+
+**Bug fixed along the way**: `docker==7.0.0` (this repo's pinned version)
+is incompatible with `urllib3==2.x` (`Error while fetching server API
+version: Not supported URL scheme http+docker`) — the same class of
+environment issue MiniCloud's own Docker integration could have hit.
+Bumped the pin to `docker>=7.1.0` in `backend/requirements.txt`.
+
+**Verified for real**, not just unit-tested: real `fake-gcs-server`
+container running via Docker, real backend server (`uvicorn`, this repo's
+actual `app.main:app`) on port 8090, real `hashicorp/google` provider
+v5.45.2, real `terraform` binary — `terraform-examples/gcs-bucket-and-object/`
+ran a full `init -> apply -> destroy` cycle creating BOTH a bucket and an
+object (the `gcs-probe` milestone only tested the bucket):
+- `apply`: both resources created, object content set to a real string.
+- Verified via TWO independent direct API calls (not just Terraform's own
+  success message): our own proxy's download path returned the exact
+  uploaded content byte-for-byte, and fake-gcs-server's own API directly
+  (bypassing our proxy entirely) confirmed the object's real metadata
+  (checksums, etag, timestamps).
+- `destroy`: both resources removed; confirmed via a direct call to
+  fake-gcs-server's API returning a genuine 404, not just trusting
+  Terraform's destroy output.
+
+Cloud Storage is the first service in this repo with Terraform-provider-
+verified wire-protocol fidelity, not just `gcloud` CLI compatibility.
+IMPLEMENTATION_TRACKER.md and README.md updated accordingly.
+
+Next: VPC Networks/Subnetworks (Phase 1, item 2) — no mature emulator
+exists for this, so it needs to be hand-built to real GCE REST API
+conformance rather than proxied to something else.

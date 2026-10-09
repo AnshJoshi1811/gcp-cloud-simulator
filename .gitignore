@@ -45,9 +45,6 @@ logs/
 *.db
 *.sqlite
 
-# Storage
-storage/
-
 # Environment
 .env
 .env.local
