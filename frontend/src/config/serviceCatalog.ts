@@ -1,4 +1,4 @@
-import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree, ScrollText, Workflow, Zap, Router as RouterIcon, UserCircle, Rss } from 'lucide-react';
+import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree, ScrollText, Workflow, Zap, Router as RouterIcon, UserCircle, Rss, Shuffle } from 'lucide-react';
 
 export interface ServiceLink {
   label: string;
@@ -248,6 +248,17 @@ export const serviceCategories: ServiceCategory[] = [
         enabled: true,
         sidebarLinks: [
           { label: 'Dashboard', path: '/services/apigateway', icon: RouterIcon },
+        ],
+      },
+      {
+        id: 'eventarc',
+        name: 'Event Routing',
+        description: 'Route Pub/Sub events to Cloud Functions',
+        icon: Shuffle,
+        category: 'Application Integration',
+        enabled: true,
+        sidebarLinks: [
+          { label: 'Triggers', path: '/services/eventarc', icon: Shuffle },
         ],
       },
       {

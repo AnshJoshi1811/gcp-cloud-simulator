@@ -51,4 +51,28 @@ contract, so this is real execution, not a canned response, in either mode.
 Other runtimes (Node, Go, etc.) are a natural follow-up if someone wants to
 extend `functions/executor.py`'s shim.
 
+## 2026-10-09 — Deployment Manager: skipped by design
+Real Cloud Deployment Manager parses Jinja2/Python-templated YAML and
+reconciles arbitrary GCP resource graphs against it — a full mini-IaC engine.
+Decision: skip it for this emulator rather than build a second, GCP-flavored
+IaC engine, for three reasons: (1) the tracker itself already flagged it
+lowest priority / Phase 4 / "skip for now"; (2) Deliverable 2 of this same
+engineering effort (MiniCloud, `/minicloud`) requires building real Terraform
+support against an AWS-shaped API — building a second IaC reconciler here
+would be duplicate, lower-value effort against a budget better spent finishing
+MiniCloud's explicit spec; (3) nothing else in this emulator depends on it.
+If it's wanted later, the natural entry point is a `deploymentmanager`
+service that parses a config's `resources:` list and dispatches to each
+service's existing storage.create_* methods already built here.
+
+## 2026-10-09 — Service Management: left partial
+The tracker's row for Service Management ("billing/quotas") predates this
+session and no corresponding `backend/app/services/service_management/`
+module exists. Decision: leave it partial rather than build a fake billing
+API — there is no real billing to emulate locally, and quota enforcement
+isn't exercised by any other service in this codebase, so a stub would add
+surface area without adding anything a user could meaningfully test against.
+Noted here (rather than silently ignored) so the tracker's "partial" status
+is a deliberate call, not an oversight.
+
 (Further decisions appended below as work proceeds.)

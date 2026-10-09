@@ -31,6 +31,7 @@ from app.services.functions.router import router as functions_router
 from app.services.apigateway.router import router as apigateway_router
 from app.services.identity.router import router as identity_router
 from app.services.cdn.router import router as cdn_router
+from app.services.eventarc.router import router as eventarc_router
 from app.api import storage  # storage remains in api/ (stable, 1100+ lines)
 import os
 
@@ -145,6 +146,9 @@ app.include_router(identity_router, prefix="/identitytoolkit/v1", tags=["Cloud I
 # Cloud CDN — compute.googleapis.com/compute/v1 backendBuckets (+ a local content-serving endpoint)
 app.include_router(cdn_router, prefix="/compute/v1", tags=["Cloud CDN"])
 app.include_router(cdn_router, prefix="/cdn/v1", tags=["Cloud CDN (content)"])
+
+# Event Routing — eventarc.googleapis.com/v1
+app.include_router(eventarc_router, prefix="/eventarc/v1", tags=["Event Routing"])
 
 
 def init_zones_and_machine_types(db):

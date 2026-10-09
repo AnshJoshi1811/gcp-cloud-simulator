@@ -44,6 +44,7 @@ import FunctionsDashboardPage from './pages/FunctionsDashboardPage';
 import ApiGatewayDashboardPage from './pages/ApiGatewayDashboardPage';
 import IdentityDashboardPage from './pages/IdentityDashboardPage';
 import CdnDashboardPage from './pages/CdnDashboardPage';
+import EventarcDashboardPage from './pages/EventarcDashboardPage';
 
 function App() {
   return (
@@ -183,6 +184,11 @@ function App() {
             {/* Cloud CDN Service Routes */}
             <Route path="/services/cdn">
               <Route index element={<CdnDashboardPage />} />
+            </Route>
+
+            {/* Event Routing Service Routes */}
+            <Route path="/services/eventarc">
+              <Route index element={<EventarcDashboardPage />} />
             </Route>
 
             {/* Legacy VPC route redirect */}

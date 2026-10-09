@@ -8,13 +8,16 @@
 ## 📋 EXECUTIVE SUMMARY
 
 **Current Implementation Status (corrected 2026-10-09 — see DECISIONS.md):**
-- ✅ Services Completed: 23 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
+- ✅ Services Completed: 24 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
   Pub/Sub, Monitoring, Autoscaling, Artifact Registry, Secret Manager, Cloud KMS,
   Cloud Tasks, Cloud SQL, Memorystore, Firestore, Cloud Logging, Cloud Load Balancer,
-  Cloud Functions, API Gateway, Cloud Identity Platform, Cloud CDN)
-- 🟡 Services Partially Done: 1 (Service Management)
-- ❌ Services Not Started: 2 (Event Routing, Deployment Manager — see DECISIONS.md)
-- 📊 Overall Coverage: 23/26 complete (88%)
+  Cloud Functions, API Gateway, Cloud Identity Platform, Cloud CDN, Event Routing)
+- 🟡 Services Partially Done: 1 (Service Management — intentionally left partial,
+  see DECISIONS.md)
+- ⬜ Services Deliberately Skipped: 1 (Deployment Manager — see DECISIONS.md)
+- 📊 Overall Coverage: 24/26 implemented (92%); 25/26 counting the documented
+  partial; Deployment Manager is the only service genuinely not attempted,
+  by design.
 
 Note: this table previously undercounted completed work (e.g. listed Secret Manager
 as "not started" when it was already fully implemented in `backend/app/services/`).
@@ -120,8 +123,8 @@ Rows below are being corrected as each service is verified against the live code
 | 22 | API Gateway | Functions, Cloud Endpoints | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 9 days | - | API configs + gateways, real proxy to deployed Cloud Functions or arbitrary URLs — DONE 2026-10-09 |
 | 23 | Cloud Identity Platform | IAM, Projects | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 7 days | - | Email/password sign-up/sign-in per project, salted-hash storage, token lookup, enable/disable — DONE 2026-10-09 |
 | **TIER 5: ORCHESTRATION** (Phase 4+) | | | | | | | | | |
-| 24 | Deployment Manager | **All services** | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | **15 days** | **LOW** | IaC - skip for now |
-| 25 | Event Routing | Pub/Sub, Functions, Tasks | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 12 days | **LOW** | EventBridge equiv - Phase 4 |
+| 24 | Deployment Manager | **All services** | ⬜ Skipped | ⬜ Skipped | ⬜ Skipped | ⬜ **SKIPPED (documented)** | **15 days** | **LOW** | IaC — deliberately out of scope, see DECISIONS.md |
+| 25 | Event Routing | Pub/Sub, Functions, Tasks | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 12 days | - | Triggers bind a Pub/Sub topic to a Cloud Function; background dispatcher really pulls+invokes, verified end-to-end — DONE 2026-10-09 |
 | 26 | Cloud CDN | Cloud Storage, Load Balancer | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 6 days | - | backendBuckets + real in-memory cache fronting actual Storage objects, genuine MISS/HIT + invalidation — DONE 2026-10-09 |
 
 ---
