@@ -1,0 +1,27 @@
+[project]
+name = "gcp-stimulator-backend"
+version = "1.0.0"
+description = "FastAPI backend for GCP Stimulator — a local GCP emulator with Docker-backed services."
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi==0.104.1",
+    "uvicorn[standard]==0.24.0",
+    "sqlalchemy==2.0.23",
+    "psycopg2-binary==2.9.9",
+    "docker>=7.1.0",
+    "pydantic==2.5.0",
+    "python-dotenv==1.0.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.4.0",
+    "httpx>=0.25.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]

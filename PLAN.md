@@ -40,7 +40,14 @@ IMPLEMENTATION_TRACKER.md + README.md, commit, push.
 Artifact Registry is marked complete in code already (router exists, wired, full CRUD) —
 treat as done; just correct the tracker text.
 
-## Deliverable 2 — MiniCloud (`/minicloud`)
+## Deliverable 2 — MiniCloud (originally built at `/minicloud` in this repo)
+
+> **Update**: MiniCloud has since been extracted to its own repository,
+> [AnshJoshi1811/minicloud](https://github.com/AnshJoshi1811/minicloud) — it's
+> a separate, unrelated product (AWS, not GCP) that didn't belong mixed into
+> this one. The plan below is left as-is as an accurate record of the
+> original work; MiniCloud's own `DECISIONS.md`/`PLAN.md` now live in its own
+> repo.
 
 Separate AWS-API-shaped emulator so the official Terraform `aws` provider works against
 `http://localhost:4566`. Python (FastAPI) for speed of reuse with this repo's own
