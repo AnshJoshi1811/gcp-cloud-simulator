@@ -1,4 +1,4 @@
-import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree, ScrollText, Workflow } from 'lucide-react';
+import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree, ScrollText, Workflow, Zap } from 'lucide-react';
 
 export interface ServiceLink {
   label: string;
@@ -137,6 +137,18 @@ export const serviceCategories: ServiceCategory[] = [
         sidebarLinks: [
           { label: 'Dashboard', path: '/services/cloud-run', icon: Cloud },
           { label: 'Services', path: '/services/cloud-run', icon: Server },
+        ],
+      },
+      {
+        id: 'functions',
+        name: 'Cloud Functions',
+        description: 'Deploy and invoke serverless functions',
+        icon: Zap,
+        category: 'Containers',
+        enabled: true,
+        sidebarLinks: [
+          { label: 'Dashboard', path: '/services/functions', icon: Zap },
+          { label: 'Functions', path: '/services/functions', icon: Zap },
         ],
       },
       {

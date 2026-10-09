@@ -27,6 +27,7 @@ from app.services.memorystore.router import router as memorystore_router
 from app.services.firestore.router import router as firestore_router
 from app.services.cloudlogging.router import router as logging_router
 from app.services.loadbalancer.router import router as loadbalancer_router
+from app.services.functions.router import router as functions_router
 from app.api import storage  # storage remains in api/ (stable, 1100+ lines)
 import os
 
@@ -128,6 +129,9 @@ app.include_router(logging_router, prefix="/logging/v2", tags=["Cloud Logging (a
 
 # Cloud Load Balancing — compute.googleapis.com/compute/v1 (global LB resources)
 app.include_router(loadbalancer_router, prefix="/compute/v1", tags=["Cloud Load Balancing"])
+
+# Cloud Functions — cloudfunctions.googleapis.com/v1 (+ a local invoke endpoint)
+app.include_router(functions_router, prefix="/functions/v1", tags=["Cloud Functions"])
 
 
 def init_zones_and_machine_types(db):

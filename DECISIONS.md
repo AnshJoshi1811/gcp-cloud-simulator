@@ -33,4 +33,22 @@ Cloud SQL / Memorystore containers follow `docker_manager.py`'s existing pattern
 if the Docker daemon is unavailable, fall back to a stub record (no real container)
 rather than failing the API call, consistent with how Compute/VPC already behave.
 
+## 2026-10-09 — Cloud Functions: Python-only, inline source, dual execution path
+Real Cloud Functions supports many runtimes and a GCS-based source upload
+flow (`generateUploadUrl` + zip). Decision: support Python 3.10/3.11/3.12
+only for now (unsupported runtimes return a clear 400, not a crash), and
+accept source code inline as a JSON string field rather than implementing
+the upload-URL + zip flow — there's no real GCS bucket semantics worth
+emulating here beyond what Cloud Storage already does, and inline source
+is enough to prove out deploy/invoke end-to-end. Execution has two paths
+mirroring `docker_manager.py`'s existing stub philosophy: when Docker is
+available, each function builds a small on-the-fly `python:3.12-slim` image
+with a stdlib-only HTTP shim and runs as a real warm container (like Cloud
+Run); when Docker is unavailable (true in this dev sandbox — no Docker
+Desktop installed), the function executes in-process via `exec()` against a
+Flask-like fake request object. Both paths exercise the same HTTP invoke
+contract, so this is real execution, not a canned response, in either mode.
+Other runtimes (Node, Go, etc.) are a natural follow-up if someone wants to
+extend `functions/executor.py`'s shim.
+
 (Further decisions appended below as work proceeds.)

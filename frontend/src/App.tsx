@@ -40,6 +40,7 @@ import MemorystoreDashboardPage from './pages/MemorystoreDashboardPage';
 import FirestoreDashboardPage from './pages/FirestoreDashboardPage';
 import LoggingDashboardPage from './pages/LoggingDashboardPage';
 import LoadBalancerDashboardPage from './pages/LoadBalancerDashboardPage';
+import FunctionsDashboardPage from './pages/FunctionsDashboardPage';
 
 function App() {
   return (
@@ -159,6 +160,11 @@ function App() {
             {/* Cloud Load Balancing Service Routes */}
             <Route path="/services/loadbalancer">
               <Route index element={<LoadBalancerDashboardPage />} />
+            </Route>
+
+            {/* Cloud Functions Service Routes */}
+            <Route path="/services/functions">
+              <Route index element={<FunctionsDashboardPage />} />
             </Route>
 
             {/* Legacy VPC route redirect */}
