@@ -1,0 +1,29 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -t gcp-stimulator-backend ./backend
+
+      - name: Build frontend image
+        run: docker build -t gcp-stimulator-frontend ./frontend
+
+      - name: Smoke test via docker compose
+        run: |
+          docker compose up -d --build
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/health && break
+            sleep 2
+          done
+          curl -sf http://localhost:8080/health
+          curl -sf http://localhost:3000/ > /dev/null
+          docker compose down

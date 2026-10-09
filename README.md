@@ -24,91 +24,70 @@ real Docker containers; VPCs are real Docker networks), and a React + TypeScript
 ## 📁 Project Structure
 
 ```
-gcs-emulator/
+gcp-cloud-simulator/
 │
 ├── backend/                      # FastAPI Backend (Port 8080)
 │   ├── app/
-│   │   ├── api/                  # API routes (storage, compute, vpc, iam, firewall, gke)
-│   │   │   ├── storage.py       # Cloud Storage API
-│   │   │   ├── compute.py       # Compute Engine API
-│   │   │   ├── vpc.py           # VPC Networks API
-│   │   │   ├── routes.py        # Route Tables API
-│   │   │   ├── firewall.py      # Firewall Rules API
-│   │   │   ├── gke.py           # GKE Clusters API
-│   │   │   ├── iam.py           # IAM API
-│   │   │   └── projects.py      # Projects API
-│   │   ├── services/             # Business logic by service
-│   │   │   ├── compute/         # Compute Engine service
-│   │   │   ├── vpc/             # VPC Network service
-│   │   │   ├── iam/             # IAM service
-│   │   │   ├── gke/             # GKE service
-│   │   │   ├── monitoring/      # Cloud Monitoring service
-│   │   │   ├── autoscaling/     # Autoscaling service
-│   │   │   ├── pubsub/          # Cloud Pub/Sub service
-│   │   │   ├── run/             # Cloud Run service
-│   │   │   ├── artifacts/       # Artifact Registry service
-│   │   │   ├── secretmanager/   # Secret Manager service
-│   │   │   └── projects/        # Projects service
-│   │   ├── models/               # SQLAlchemy ORM models
-│   │   │   └── database.py
-│   │   ├── core/                 # Core utilities
-│   │   │   └── docker_manager.py # Docker lifecycle management
-│   │   ├── utils/                # Utility scripts
-│   │   │   ├── ip_manager.py
-│   │   │   ├── migrate_cidr.py
-│   │   │   ├── region_subnets.py
-│   │   │   └── sync_docker_instances.py
-│   │   └── main.py              # FastAPI entry point
-│   ├── database.py              # Backward-compatibility layer
-│   ├── core/                    # Legacy compatibility
-│   ├── requirements.txt         # Python dependencies
-│   └── README.md
+│   │   ├── api/
+│   │   │   └── storage.py       # Cloud Storage API (live; the rest of this
+│   │   │                        #   legacy layer was removed — see DECISIONS.md)
+│   │   ├── services/             # Business logic by GCP service, one dir each:
+│   │   │   ├── compute/ vpc/ iam/ gke/ run/ artifacts/ projects/
+│   │   │   ├── monitoring/ autoscaling/ pubsub/ secretmanager/ kms/
+│   │   │   ├── tasks/ sql/ memorystore/ firestore/ cloudlogging/
+│   │   │   ├── loadbalancer/ functions/ apigateway/ identity/
+│   │   │   └── cdn/ eventarc/
+│   │   ├── models/database.py    # SQLAlchemy ORM models
+│   │   ├── core/docker_manager.py # Docker lifecycle management
+│   │   ├── utils/                # ip_manager, migrate_cidr, region_subnets, etc.
+│   │   └── main.py               # FastAPI entry point
+│   ├── pyproject.toml            # Python package + dependencies
+│   └── Dockerfile
 │
 ├── frontend/                     # React + TypeScript Frontend (Port 3000)
 │   ├── src/
 │   │   ├── pages/               # Service pages (Storage, Compute, VPC, IAM, Monitoring, etc.)
-│   │   ├── components/          # Reusable UI components
+│   │   ├── components/ contexts/ hooks/ layouts/ types/ utils/ config/
 │   │   ├── api/                 # API client functions
-│   │   ├── contexts/            # React context providers
-│   │   ├── hooks/               # Custom React hooks
-│   │   ├── layouts/             # Layout components
-│   │   ├── types/               # TypeScript interfaces
-│   │   ├── utils/               # Utility functions
-│   │   ├── config/              # Configuration
-│   │   ├── App.tsx              # Main app component
-│   │   └── main.tsx             # React entry point
-│   ├── package.json
-│   ├── vite.config.ts
-│   ├── tailwind.config.js
-│   ├── Dockerfile
-│   ├── nginx.conf
+│   │   ├── App.tsx / main.tsx
+│   ├── package.json / vite.config.ts / tailwind.config.js
+│   ├── Dockerfile / nginx.conf
 │   └── README.md
 │
 ├── tests/                        # Test suites
 │   ├── integration/              # Integration tests (20+ test suites)
-│   ├── fixtures/                 # Test fixtures and utilities
-│   ├── gcloud_wrappers/          # gcloud CLI wrappers
-│   ├── scripts/                  # Test automation scripts
-│   ├── unit/                     # Unit tests (ready for expansion)
-│   ├── mocks/                    # Mock utilities (ready for expansion)
+│   ├── fixtures/ gcloud_wrappers/ scripts/
+│   ├── unit/ mocks/              # Ready for expansion
 │   ├── conftest.py
 │   └── README.md
 │
-├── docs/
-│   └── archived/                 # Archived documentation
+├── scripts/                      # Dev/maintenance scripts
+│   ├── stimulator.sh             # source scripts/stimulator.sh {on,off,status}
+│   ├── test-connectivity.sh
+│   └── generate_context.py
 │
-├── Files/                        # Important reference documentation
-│   ├── CLAUDE.md
-│   ├── DEVELOPMENT_RULES.md
-│   ├── SKILLS_ROADMAP.md
-│   └── ...
+├── .github/
+│   ├── workflows/                # backend-ci, frontend-ci, docker-build
+│   ├── ISSUE_TEMPLATE/
+│   └── PULL_REQUEST_TEMPLATE.md
 │
-├── CLAUDE.md                    # Project context and architecture
-├── IMPLEMENTATION_TRACKER.md    # Feature checklist
-├── README.md                    # This file
-├── pytest.ini                   # Pytest configuration
-└── .env-gcloud                  # gcloud CLI environment
+├── docker-compose.yml            # `docker compose up --build` runs the whole stack
+├── LICENSE                       # MIT
+├── CONTRIBUTING.md
+├── CLAUDE.md                     # Project context and architecture
+├── IMPLEMENTATION_TRACKER.md     # Feature checklist
+├── DECISIONS.md                  # Engineering decision log
+├── PLAN.md                       # Roadmap
+├── README.md                     # This file
+├── pytest.ini                    # Pytest configuration
+└── .env-gcloud                   # gcloud CLI environment
 ```
+
+> **Note**: MiniCloud, a separate AWS-emulator project that used to live in this
+> repo's `/minicloud`, has been extracted to its own repository:
+> [AnshJoshi1811/minicloud](https://github.com/AnshJoshi1811/minicloud) — it's
+> an unrelated product (different cloud, different purpose) and doesn't belong
+> mixed into this one.
 
 ## 🗂️ Service Catalog (authoritative status)
 
@@ -187,19 +166,26 @@ Engineering decisions and rationale: [DECISIONS.md](DECISIONS.md).
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Docker installed and running
-- PostgreSQL RDS database (configured in `DATABASE_URL`)
+- Docker installed and running (optional — the emulator degrades gracefully
+  to stub mode without it; see DECISIONS.md)
 - Node.js 18+ and npm
-- Python 3.9+
+- Python 3.10+
 - gcloud CLI (optional, for command-line testing)
+
+`DATABASE_URL` is optional too — it defaults to a local SQLite file; set it
+to a PostgreSQL connection string if you want Postgres instead.
+
+**Fastest path**: `docker compose up --build` (see `docker-compose.yml`)
+brings up both backend and frontend together. For local dev with hot-reload,
+run each separately:
 
 ### 1. Start Backend (Port 8080)
 
 ```bash
-cd /home/ubuntu/gcs-emulator/backend
+cd backend
 
-# Install Python dependencies
-pip install -r requirements.txt
+# Install the package (editable install, from pyproject.toml)
+pip install -e .
 
 # Start FastAPI server with hot-reload
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
@@ -211,7 +197,7 @@ curl http://localhost:8080/health
 ### 2. Start Frontend (Port 3000)
 
 ```bash
-cd /home/ubuntu/gcs-emulator/frontend
+cd frontend
 
 # Install Node dependencies (first time only)
 npm install
@@ -225,8 +211,8 @@ npm run dev -- --host 0.0.0.0
 ### 3. Configure gcloud CLI (Optional)
 
 ```bash
-# Source environment variables
-source /home/ubuntu/gcs-stimulator/.env-gcloud
+# Source environment variables (run from the repo root)
+source .env-gcloud
 
 # Test gcloud commands
 gcloud compute zones list --project=test-project
@@ -496,7 +482,7 @@ cd gcs-emulator
 
 # Start backend
 cd backend
-pip install -r requirements.txt
+pip install -e .
 uvicorn app.main:app --reload
 
 # Start frontend
