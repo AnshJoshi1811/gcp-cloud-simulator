@@ -1,4 +1,4 @@
-import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree } from 'lucide-react';
+import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree, ScrollText } from 'lucide-react';
 
 export interface ServiceLink {
   label: string;
@@ -277,6 +277,17 @@ export const serviceCategories: ServiceCategory[] = [
         sidebarLinks: [
           { label: 'Dashboard', path: '/services/autoscaling', icon: Gauge },
           { label: 'Policies', path: '/services/autoscaling', icon: Gauge },
+        ],
+      },
+      {
+        id: 'logging',
+        name: 'Cloud Logging',
+        description: 'Aggregate, filter, and query logs across services',
+        icon: ScrollText,
+        category: 'Monitoring',
+        enabled: true,
+        sidebarLinks: [
+          { label: 'Logs Explorer', path: '/services/logging', icon: ScrollText },
         ],
       },
     ],

@@ -38,6 +38,7 @@ import TasksDashboardPage from './pages/TasksDashboardPage';
 import SqlDashboardPage from './pages/SqlDashboardPage';
 import MemorystoreDashboardPage from './pages/MemorystoreDashboardPage';
 import FirestoreDashboardPage from './pages/FirestoreDashboardPage';
+import LoggingDashboardPage from './pages/LoggingDashboardPage';
 
 function App() {
   return (
@@ -147,6 +148,11 @@ function App() {
             {/* Firestore Service Routes */}
             <Route path="/services/firestore">
               <Route index element={<FirestoreDashboardPage />} />
+            </Route>
+
+            {/* Cloud Logging Service Routes */}
+            <Route path="/services/logging">
+              <Route index element={<LoggingDashboardPage />} />
             </Route>
 
             {/* Legacy VPC route redirect */}

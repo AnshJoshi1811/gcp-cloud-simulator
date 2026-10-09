@@ -8,12 +8,12 @@
 ## 📋 EXECUTIVE SUMMARY
 
 **Current Implementation Status (corrected 2026-10-09 — see DECISIONS.md):**
-- ✅ Services Completed: 17 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
+- ✅ Services Completed: 18 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
   Pub/Sub, Monitoring, Autoscaling, Artifact Registry, Secret Manager, Cloud KMS,
-  Cloud Tasks, Cloud SQL, Memorystore, Firestore)
+  Cloud Tasks, Cloud SQL, Memorystore, Firestore, Cloud Logging)
 - 🟡 Services Partially Done: 1 (Service Management)
-- ❌ Services Not Started: 8
-- 📊 Overall Coverage: 17/26 complete (65%)
+- ❌ Services Not Started: 7
+- 📊 Overall Coverage: 18/26 complete (69%)
 
 Note: this table previously undercounted completed work (e.g. listed Secret Manager
 as "not started" when it was already fully implemented in `backend/app/services/`).
@@ -109,7 +109,7 @@ Rows below are being corrected as each service is verified against the live code
 | 13 | GKE | VPC, Compute, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 8 days | - | Kubernetes clusters |
 | 14 | Cloud Run | Artifact Reg, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 5 days | - | Container services |
 | 15 | Cloud Pub/Sub | IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 6 days | - | Topic/subscriptions ✅ JUST DONE |
-| 16 | Cloud Logging | Projects, IAM | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 5 days | **HIGH** | Log aggregation/querying |
+| 16 | Cloud Logging | Projects, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 5 days | - | entries.write/list + sinks, practical filter subset (severity, logName, resource.type) — DONE 2026-10-09 |
 | 17 | Cloud Monitoring | Projects, IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 8 days | - | Metrics/alerts ✅ JUST DONE |
 | 18 | Artifact Registry | IAM | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 3 days | - | Image management, confirmed complete 2026-10-09 |
 | 19 | Cloud Load Balancer | Compute, VPC, IAM | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 8 days | **MEDIUM** | L4/L7 load balancing |
