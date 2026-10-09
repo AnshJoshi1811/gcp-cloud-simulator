@@ -41,6 +41,7 @@ import FirestoreDashboardPage from './pages/FirestoreDashboardPage';
 import LoggingDashboardPage from './pages/LoggingDashboardPage';
 import LoadBalancerDashboardPage from './pages/LoadBalancerDashboardPage';
 import FunctionsDashboardPage from './pages/FunctionsDashboardPage';
+import ApiGatewayDashboardPage from './pages/ApiGatewayDashboardPage';
 
 function App() {
   return (
@@ -165,6 +166,11 @@ function App() {
             {/* Cloud Functions Service Routes */}
             <Route path="/services/functions">
               <Route index element={<FunctionsDashboardPage />} />
+            </Route>
+
+            {/* API Gateway Service Routes */}
+            <Route path="/services/apigateway">
+              <Route index element={<ApiGatewayDashboardPage />} />
             </Route>
 
             {/* Legacy VPC route redirect */}

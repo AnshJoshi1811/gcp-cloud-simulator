@@ -28,6 +28,7 @@ from app.services.firestore.router import router as firestore_router
 from app.services.cloudlogging.router import router as logging_router
 from app.services.loadbalancer.router import router as loadbalancer_router
 from app.services.functions.router import router as functions_router
+from app.services.apigateway.router import router as apigateway_router
 from app.api import storage  # storage remains in api/ (stable, 1100+ lines)
 import os
 
@@ -132,6 +133,9 @@ app.include_router(loadbalancer_router, prefix="/compute/v1", tags=["Cloud Load 
 
 # Cloud Functions — cloudfunctions.googleapis.com/v1 (+ a local invoke endpoint)
 app.include_router(functions_router, prefix="/functions/v1", tags=["Cloud Functions"])
+
+# API Gateway — apigateway.googleapis.com/v1 (+ a local proxy/invoke endpoint)
+app.include_router(apigateway_router, prefix="/apigateway/v1", tags=["API Gateway"])
 
 
 def init_zones_and_machine_types(db):

@@ -8,13 +8,13 @@
 ## 📋 EXECUTIVE SUMMARY
 
 **Current Implementation Status (corrected 2026-10-09 — see DECISIONS.md):**
-- ✅ Services Completed: 20 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
+- ✅ Services Completed: 21 (Projects, VPC, Compute, Storage, IAM, GKE, Cloud Run,
   Pub/Sub, Monitoring, Autoscaling, Artifact Registry, Secret Manager, Cloud KMS,
   Cloud Tasks, Cloud SQL, Memorystore, Firestore, Cloud Logging, Cloud Load Balancer,
-  Cloud Functions)
+  Cloud Functions, API Gateway)
 - 🟡 Services Partially Done: 1 (Service Management)
-- ❌ Services Not Started: 5
-- 📊 Overall Coverage: 20/26 complete (77%)
+- ❌ Services Not Started: 4
+- 📊 Overall Coverage: 21/26 complete (81%)
 
 Note: this table previously undercounted completed work (e.g. listed Secret Manager
 as "not started" when it was already fully implemented in `backend/app/services/`).
@@ -117,7 +117,7 @@ Rows below are being corrected as each service is verified against the live code
 | 20 | Auto-Scaling | Compute, Monitoring | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 7 days | - | Dynamic compute scaling ✅ JUST DONE |
 | **TIER 4: COMPUTE/APPLICATION** (Depends on Tier 3) | | | | | | | | | |
 | 21 | Cloud Functions | Storage, Pub/Sub, Monitoring | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | **10 days** | - | Python-only (see DECISIONS.md); real container execution when Docker is available, in-process exec() fallback otherwise — both paths genuinely execute user code — DONE 2026-10-09 |
-| 22 | API Gateway | Functions, Cloud Endpoints | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 9 days | **HIGH** | REST API management |
+| 22 | API Gateway | Functions, Cloud Endpoints | ✅ Done | ✅ Done | ✅ Done | ✅ **COMPLETE** | 9 days | - | API configs + gateways, real proxy to deployed Cloud Functions or arbitrary URLs — DONE 2026-10-09 |
 | 23 | Cloud Identity Platform | IAM, Projects | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | 7 days | **MEDIUM** | OAuth2, user mgmt |
 | **TIER 5: ORCHESTRATION** (Phase 4+) | | | | | | | | | |
 | 24 | Deployment Manager | **All services** | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ **NOT STARTED** | **15 days** | **LOW** | IaC - skip for now |
