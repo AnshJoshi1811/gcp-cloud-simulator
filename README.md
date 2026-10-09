@@ -4,6 +4,16 @@ A **local GCP emulator** for development and testing: FastAPI backend with Docke
 services where that mirrors real GCP behavior (VM instances and Cloud SQL/Memorystore are
 real Docker containers; VPCs are real Docker networks), and a React + TypeScript console UI.
 
+> **🎯 Mission**: be for GCP what [LocalStack](https://github.com/localstack/localstack) is
+> for AWS — a real local server the *official, unmodified* Terraform `google` provider (and
+> eventually the `google-cloud-python`/other SDKs) can be pointed at via endpoint overrides,
+> with genuine wire-protocol fidelity per resource, not just enough to satisfy `gcloud` CLI
+> calls. This is a long-term, resource-by-resource effort — see the "Terraform / google-
+> provider compatibility" section of [DECISIONS.md](DECISIONS.md) for current real-provider-
+> verified coverage, and [PLAN.md](PLAN.md)'s Deliverable 3 for the roadmap. LocalStack
+> covers 100+ AWS services built up over ~8 years; this is the equivalent long game for GCP,
+> starting from Cloud Storage (done) toward VPC and Compute Engine (in progress).
+
 > **📊 Status: 24 of 26 cataloged services implemented** (see
 > [IMPLEMENTATION_TRACKER.md](IMPLEMENTATION_TRACKER.md) for the authoritative,
 > per-service status). One service (Service Management / billing-quotas) is

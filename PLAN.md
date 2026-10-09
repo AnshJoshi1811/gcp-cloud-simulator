@@ -55,13 +55,25 @@ commit, push.
 
 ---
 
-## Deliverable 3 — gcp-cloud-simulator as a genuine "moto for GCP" (this branch: `feature/terraform-google-provider`)
+## Deliverable 3 — gcp-cloud-simulator as the GCP equivalent of LocalStack (this branch: `feature/terraform-google-provider`)
 
-Goal: real, wire-protocol-faithful compatibility with the unmodified
-`hashicorp/google` Terraform provider — the same empirical bar MiniCloud met
-for `hashicorp/aws` via moto. Full rationale and the Phase 0 research in
-`DECISIONS.md`'s "Terraform / google-provider compatibility" section below
-Deliverable 1's entries.
+Explicit, stated mission (owner's own words): **"we have to do for GCP what
+LocalStack is doing for AWS."** LocalStack is the more accurate reference
+point than moto — it's a running local server the real, unmodified cloud
+provider's Terraform plugin talks to over HTTP, exactly this project's own
+architecture, not a Python-only in-process mocking library. moto is still
+the right model for individual services that need deep wire-protocol
+fidelity (hence adopting `fake-gcs-server`, itself conceptually "moto for
+GCS"), but the project-level ambition is LocalStack-shaped: one server,
+broad real-provider-verified service coverage, built up resource by
+resource. Honest scale context: LocalStack covers 100+ AWS services with
+~8 years of community effort behind it; this effort currently has 1
+service/2 resource types real-provider-verified (Cloud Storage). This is a
+long-term, multi-session roadmap, not a sprint — each milestone below is
+one more real brick in that wall.
+
+Full rationale and the Phase 0 research in `DECISIONS.md`'s "Terraform /
+google-provider compatibility" section below Deliverable 1's entries.
 
 ### Phase 0 — Research (DONE)
 - No mature general-purpose "moto for GCP" exists (`drongo` is architecturally
