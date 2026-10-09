@@ -867,6 +867,105 @@ def delete_cloud_run_revision_container(container_id: Optional[str]) -> None:
         return
 
 
+def create_data_service_container(
+    name: str,
+    image: str,
+    env: Optional[Dict[str, str]] = None,
+    ports: Optional[Dict[str, int]] = None,
+    network: str = "gcp-default",
+) -> Dict[str, Optional[str]]:
+    """Create a generic data-backing container (Cloud SQL, Memorystore, ...).
+
+    Unlike create_container(), this supports environment variables and
+    published ports, since these services need to be reachable from the
+    host (e.g. `psql -h localhost -p <port>`), not just from other
+    containers on the Docker network.
+
+    Returns: {"container_id", "container_name", "internal_ip", "host_port"}
+    """
+    container_name = f"gcp-svc-{name}"
+
+    if not _docker_available:
+        internal_ip = _stub_ip()
+        host_port = list(ports.values())[0] if ports else None
+        return {
+            "container_id": f"stub-{container_name}",
+            "container_name": container_name,
+            "internal_ip": internal_ip,
+            "host_port": host_port,
+        }
+
+    try:
+        existing = client.containers.get(container_name)
+        raise RuntimeError(f"Container name '{container_name}' already in use (id={existing.id[:12]})")
+    except docker.errors.NotFound:
+        pass
+
+    try:
+        client.networks.get(network)
+    except Exception:
+        create_default_network()
+
+    port_bindings = {f"{container_port}/tcp": None for container_port in (ports or {}).values()}
+
+    try:
+        container = client.containers.run(
+            image,
+            name=container_name,
+            environment=env or {},
+            ports=port_bindings or None,
+            detach=True,
+            network=network,
+            hostname=name,
+        )
+    except docker.errors.APIError as e:
+        raise RuntimeError(f"Failed to create container '{container_name}': {e}")
+
+    container.reload()
+    internal_ip = container.attrs.get("NetworkSettings", {}).get("Networks", {}).get(network, {}).get("IPAddress")
+
+    host_port = None
+    if ports:
+        container_port = list(ports.values())[0]
+        bindings = container.attrs.get("NetworkSettings", {}).get("Ports", {}).get(f"{container_port}/tcp")
+        if bindings:
+            host_port = int(bindings[0]["HostPort"])
+
+    return {
+        "container_id": container.id,
+        "container_name": container_name,
+        "internal_ip": internal_ip,
+        "host_port": host_port,
+    }
+
+
+def stop_data_service_container(container_id: str) -> None:
+    if not _docker_available or not container_id or container_id.startswith("stub-"):
+        return
+    try:
+        client.containers.get(container_id).stop()
+    except Exception:
+        pass
+
+
+def start_data_service_container(container_id: str) -> None:
+    if not _docker_available or not container_id or container_id.startswith("stub-"):
+        return
+    try:
+        client.containers.get(container_id).start()
+    except Exception:
+        pass
+
+
+def delete_data_service_container(container_id: str) -> None:
+    if not _docker_available or not container_id or container_id.startswith("stub-"):
+        return
+    try:
+        client.containers.get(container_id).remove(force=True)
+    except Exception:
+        pass
+
+
 # Initialize default network
 create_default_network()
 print("✅ Docker manager initialized")

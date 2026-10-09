@@ -35,6 +35,7 @@ import SecretDetailPage from './pages/SecretDetailPage';
 import AutoscalingDashboardPage from './pages/AutoscalingDashboardPage';
 import KMSDashboardPage from './pages/KMSDashboardPage';
 import TasksDashboardPage from './pages/TasksDashboardPage';
+import SqlDashboardPage from './pages/SqlDashboardPage';
 
 function App() {
   return (
@@ -129,6 +130,11 @@ function App() {
             {/* Cloud Tasks Service Routes */}
             <Route path="/services/tasks">
               <Route index element={<TasksDashboardPage />} />
+            </Route>
+
+            {/* Cloud SQL Service Routes */}
+            <Route path="/services/sql">
+              <Route index element={<SqlDashboardPage />} />
             </Route>
 
             {/* Legacy VPC route redirect */}

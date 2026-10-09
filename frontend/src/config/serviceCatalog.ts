@@ -1,4 +1,4 @@
-import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks } from 'lucide-react';
+import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database } from 'lucide-react';
 
 export interface ServiceLink {
   label: string;
@@ -204,6 +204,24 @@ export const serviceCategories: ServiceCategory[] = [
         sidebarLinks: [
           { label: 'Dashboard', path: '/services/tasks', icon: ListChecks },
           { label: 'Queues', path: '/services/tasks', icon: ListChecks },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'databases',
+    name: 'Databases',
+    services: [
+      {
+        id: 'sql',
+        name: 'Cloud SQL',
+        description: 'Managed PostgreSQL and MySQL instances',
+        icon: Database,
+        category: 'Databases',
+        enabled: true,
+        sidebarLinks: [
+          { label: 'Dashboard', path: '/services/sql', icon: Database },
+          { label: 'Instances', path: '/services/sql', icon: Database },
         ],
       },
     ],
