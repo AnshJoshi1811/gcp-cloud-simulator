@@ -17,5 +17,5 @@ see CONTRIBUTING.md's verification bar. -->
 ## Checklist
 
 - [ ] Tests pass locally (`python -m pytest tests/integration`)
-- [ ] `IMPLEMENTATION_TRACKER.md` / `README.md` updated if service status changed
-- [ ] Non-obvious decisions recorded in `DECISIONS.md`
+- [ ] `CLAUDE.md`'s Service Status table / `README.md` updated if service status changed
+- [ ] Non-obvious decisions recorded in `CLAUDE.md`'s Engineering Decisions Log

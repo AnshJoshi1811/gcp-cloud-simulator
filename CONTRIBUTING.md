@@ -5,8 +5,8 @@ for GCP, what [LocalStack](https://github.com/localstack/localstack) is for
 AWS — a local server the real, unmodified cloud provider tooling (starting
 with the Terraform `google` provider) can be pointed at, with genuine
 wire-protocol fidelity. See [README.md](README.md) for the current status and
-[PLAN.md](PLAN.md) / [DECISIONS.md](DECISIONS.md) for the roadmap and
-engineering rationale.
+[CLAUDE.md](CLAUDE.md) for the full architecture, roadmap, and engineering
+decisions log.
 
 ## Development setup
 
@@ -51,15 +51,15 @@ compatibility" effort (see `feature/terraform-google-provider`-style work),
 the bar is: a genuine `terraform init -> apply -> destroy` cycle against the
 real, unmodified `hashicorp/google` provider, with the result verified via an
 independent check (a direct API call, `docker ps`, etc.) — never just
-Terraform's own exit code. See `DECISIONS.md`'s "Terraform / google-provider
-compatibility" section for worked examples of this bar being met.
+Terraform's own exit code. See `CLAUDE.md`'s "Terraform/google-provider
+compatibility" decisions log entries for worked examples of this bar being met.
 
 ## Commit messages and decisions
 
 - Keep commits focused and the message explaining *why*, not just *what*.
 - Non-obvious engineering calls (an ambiguous design choice, a workaround, a
-  deliberate scope cut) belong in `DECISIONS.md`, not just in a commit
-  message — it's the project's running engineering log.
+  deliberate scope cut) belong in `CLAUDE.md`'s Engineering Decisions Log,
+  not just in a commit message — it's the project's running engineering log.
 
 ## Code of conduct
 

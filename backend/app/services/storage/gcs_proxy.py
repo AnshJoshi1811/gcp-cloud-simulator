@@ -6,8 +6,8 @@ the exact request/response shapes the real `hashicorp/google` Terraform
 provider expects. fake-gcs-server is a mature, widely-used emulator that
 speaks GCS's actual wire protocol, so proxying the core bucket/object CRUD
 paths to it gives genuine protocol fidelity with zero reimplementation risk
-— see DECISIONS.md's "Terraform / google-provider compatibility" section
-for the full reasoning and the empirical probe that proved this approach
+— see CLAUDE.md's "Terraform/google-provider compatibility" decisions log
+entries for the full reasoning and the empirical probe that proved this approach
 viable.
 
 Only the resource paths a Terraform `google_storage_bucket` /

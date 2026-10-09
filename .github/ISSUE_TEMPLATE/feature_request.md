@@ -11,6 +11,6 @@ labels: enhancement
 
 **Terraform provider needed?** If you need this to work with the real
 `hashicorp/google` Terraform provider specifically (not just `gcloud` CLI or
-the UI), say so — that has a higher fidelity bar; see
-`IMPLEMENTATION_TRACKER.md` and `DECISIONS.md` for current real-provider
+the UI), say so — that has a higher fidelity bar; see `CLAUDE.md`'s Service
+Status table and Engineering Decisions Log for current real-provider
 coverage.

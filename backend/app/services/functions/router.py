@@ -5,7 +5,7 @@ Implements a subset of cloudfunctions.googleapis.com/v1: deploy (generateUploadU
 is skipped — source is sent inline as a string, since there's no real GCS upload
 flow here), get/list/delete, and an HTTP invoke endpoint that actually executes
 the function (container-backed when Docker is available, in-process otherwise).
-Python-only for now (see DECISIONS.md) — a clear 400 for unsupported runtimes.
+Python-only for now (see CLAUDE.md's decisions log) — a clear 400 for unsupported runtimes.
 """
 
 from typing import Any, Dict, Optional

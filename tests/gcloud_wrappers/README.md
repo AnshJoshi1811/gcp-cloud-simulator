@@ -24,4 +24,4 @@ result = create_instance(project="my-project", zone="us-central1-a", name="my-vm
 
 ## Compatibility
 
-See `IMPLEMENTATION_TRACKER.md` at the repo root for current gcloud/service coverage and known limitations.
+See `CLAUDE.md` at the repo root (Service Status table) for current gcloud/service coverage and known limitations.

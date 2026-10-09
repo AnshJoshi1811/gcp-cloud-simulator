@@ -776,7 +776,7 @@ def ensure_fake_gcs_server() -> Dict[str, str]:
     """Ensure a real fake-gcs-server (fsouza/fake-gcs-server) container is
     running on localhost:4443. This is what gives Cloud Storage genuine GCS
     wire-protocol fidelity (real JSON/XML/resumable-upload semantics) instead
-    of a hand-rolled approximation — see DECISIONS.md's Phase 0 writeup."""
+    of a hand-rolled approximation — see CLAUDE.md's decisions log."""
     if not _docker_available:
         return {
             "container_id": "stub-fake-gcs",
