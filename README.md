@@ -1,10 +1,25 @@
 # GCP Stimulator 🚀
 
-A **comprehensive Google Cloud Platform (GCP) emulator** that simulates GCP services locally with Docker integration. Built with FastAPI and PostgreSQL for the backend, and React with TypeScript for the frontend UI.
+A **local GCP emulator** for development and testing: FastAPI backend with Docker-backed
+services where that mirrors real GCP behavior (VM instances and Cloud SQL/Memorystore are
+real Docker containers; VPCs are real Docker networks), and a React + TypeScript console UI.
 
-> **✨ Now includes Compute Engine, VPC Networks with Route Tables, Subnets, Cloud Storage, and IAM Service Accounts!**
-> 
-> **📝 Last Updated**: April 24, 2026 - Full production-ready GCP emulation with enhanced stability and performance optimizations.
+> **📊 Status: 24 of 26 cataloged services implemented** (see
+> [IMPLEMENTATION_TRACKER.md](IMPLEMENTATION_TRACKER.md) for the authoritative,
+> per-service status). One service (Service Management / billing-quotas) is
+> intentionally left partial and one (Deployment Manager) is intentionally
+> skipped — both decisions, with rationale, are recorded in
+> [DECISIONS.md](DECISIONS.md). This is a **local development tool**, not a
+> certified or production GCP replacement: it is not API-complete, does not
+> enforce IAM/quota limits, and several services use simplified semantics
+> documented inline (e.g. Cloud KMS encryption is a reversible local stand-in,
+> not real cryptography). It is, however, functionally real where it counts:
+> Compute/VPC/SQL/Memorystore spin up actual Docker containers and networks,
+> Cloud Functions actually executes your code, Cloud CDN actually caches real
+> Storage bytes, and Event Routing actually dispatches Pub/Sub messages to
+> Cloud Functions.
+>
+> **📝 Last updated**: 2026-10-09.
 
 ## 📁 Project Structure
 
@@ -94,6 +109,28 @@ gcs-emulator/
 ├── pytest.ini                   # Pytest configuration
 └── .env-gcloud                  # gcloud CLI environment
 ```
+
+## 🗂️ Service Catalog (authoritative status)
+
+| Service | Status | Notes |
+|---|---|---|
+| Projects, VPC, Compute Engine, Cloud Storage, IAM | ✅ Complete | Core infra, Docker-backed |
+| GKE, Cloud Run, Artifact Registry | ✅ Complete | |
+| Pub/Sub, Cloud Monitoring, Autoscaling | ✅ Complete | |
+| Secret Manager, Cloud KMS, Cloud Tasks | ✅ Complete | KMS encryption is a local reversible stand-in, not real crypto |
+| Cloud SQL, Memorystore | ✅ Complete | Real Postgres/MySQL/Redis containers (stub record if Docker unavailable) |
+| Firestore, Cloud Logging | ✅ Complete | In-memory |
+| Cloud Load Balancing | ✅ Complete | `:simulate` performs real round-robin HTTP routing to backend instances |
+| Cloud Functions | ✅ Complete | Real execution: container-backed when Docker is available, in-process otherwise; Python only |
+| API Gateway | ✅ Complete | Real proxy to deployed Cloud Functions or external URLs |
+| Cloud Identity Platform | ✅ Complete | Email/password auth, salted-hashed, per project |
+| Cloud CDN | ✅ Complete | Real in-memory cache fronting actual Storage objects |
+| Event Routing (Eventarc-style) | ✅ Complete | Real Pub/Sub → Cloud Functions dispatch |
+| Service Management | 🟡 Partial | Left as-is — no real billing to emulate locally, see DECISIONS.md |
+| Deployment Manager | ⬜ Skipped | Deliberate — see DECISIONS.md (MiniCloud covers Terraform/IaC instead) |
+
+Full per-service detail, dependencies, and history: [IMPLEMENTATION_TRACKER.md](IMPLEMENTATION_TRACKER.md).
+Engineering decisions and rationale: [DECISIONS.md](DECISIONS.md).
 
 ## ✨ Features
 
