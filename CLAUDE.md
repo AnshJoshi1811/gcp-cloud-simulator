@@ -305,7 +305,6 @@ VITE_API_BASE_URL=http://localhost:8080  # Backend API URL
 - `README.md` — Project overview
 - `IMPLEMENTATION_TRACKER.md` — Feature checklist
 - `CONTEXT_CHECKPOINT.md` — Context history
-- `docs/archived/` — Research and archived docs
 - API Docs — Auto-generated via Swagger at `/docs`
 
 ---

@@ -24,4 +24,4 @@ result = create_instance(project="my-project", zone="us-central1-a", name="my-vm
 
 ## Compatibility
 
-See `GCLOUD_CLI_LIMITATIONS.md` in docs/archived/ for known gcloud limitations with the emulator.
+See `IMPLEMENTATION_TRACKER.md` at the repo root for current gcloud/service coverage and known limitations.
