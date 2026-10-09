@@ -80,3 +80,16 @@ tests/CloudTester/
 
 # Project-specific
 /tmp/gcs-storage/
+
+# MiniCloud (Deliverable 2)
+minicloud/minicloud.db
+minicloud/minicloud.log
+minicloud/.minicloud.pid
+minicloud/test_minicloud_*.db
+minicloud/**/.terraform/
+minicloud/**/.terraform.lock.hcl
+minicloud/**/terraform.tfstate
+minicloud/**/terraform.tfstate.backup
+minicloud/**/*.log
+minicloud/**/provider.tf
+minicloud.egg-info/

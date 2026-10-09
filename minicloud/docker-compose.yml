@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  minicloud:
+    build: .
+    image: minicloud:latest
+    ports:
+      - "4566:4566"
+    volumes:
+      # Lets MiniCloud's reconciler manage containers on the HOST's Docker
+      # daemon (so Terraform-created "instances" are visible to `docker ps`
+      # on your machine, not nested inside this container's own daemon).
+      - /var/run/docker.sock:/var/run/docker.sock
+      - minicloud-data:/data
+    environment:
+      - MINICLOUD_DB_PATH=/data/minicloud.db
+
+volumes:
+  minicloud-data:
