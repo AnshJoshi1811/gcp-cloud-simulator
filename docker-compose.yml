@@ -16,11 +16,18 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      # Defaults to SQLite if unset. Point this at a real Postgres
-      # connection string (e.g. postgresql://user:pass@host:5432/db) to
-      # use Postgres instead.
-      - DATABASE_URL=${DATABASE_URL:-}
+    # No DATABASE_URL set here on purpose: the app defaults to local SQLite
+    # when the variable is absent from the environment entirely. (A
+    # Compose `${DATABASE_URL:-}` interpolation here would instead set it
+    # to an actual *empty string*, which is NOT the same as unset — the
+    # backend's `os.getenv("DATABASE_URL", default)` only falls back to
+    # its default when the key is missing, not when it's empty, so an
+    # empty string would reach `create_engine("")` and crash on startup.)
+    # To use Postgres instead, create a docker-compose.override.yml with:
+    #   services:
+    #     backend:
+    #       environment:
+    #         - DATABASE_URL=postgresql://user:pass@host:5432/db
     restart: unless-stopped
 
   frontend:

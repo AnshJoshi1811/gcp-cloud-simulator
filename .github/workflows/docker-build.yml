@@ -26,4 +26,11 @@ jobs:
           done
           curl -sf http://localhost:8080/health
           curl -sf http://localhost:3000/ > /dev/null
-          docker compose down
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Tear down
+        if: always()
+        run: docker compose down
