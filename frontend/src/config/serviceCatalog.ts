@@ -1,4 +1,4 @@
-import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree, ScrollText } from 'lucide-react';
+import { LucideIcon, HardDrive, Cpu, Network, Shield, MessageSquare, Activity, Globe, Lock, Route, Box, Server, Layers, Cloud, PackageSearch, Key, Gauge, KeyRound, ListChecks, Database, FolderTree, ScrollText, Workflow } from 'lucide-react';
 
 export interface ServiceLink {
   label: string;
@@ -77,6 +77,17 @@ export const serviceCategories: ServiceCategory[] = [
           { label: 'Subnets', path: '/services/vpc/subnets', icon: Network },
           { label: 'Firewall Rules', path: '/services/vpc/firewalls', icon: Lock },
           { label: 'Routes', path: '/services/vpc/routes', icon: Route },
+        ],
+      },
+      {
+        id: 'loadbalancer',
+        name: 'Cloud Load Balancing',
+        description: 'Distribute traffic across backend instances',
+        icon: Workflow,
+        category: 'Networking',
+        enabled: true,
+        sidebarLinks: [
+          { label: 'Dashboard', path: '/services/loadbalancer', icon: Workflow },
         ],
       },
     ],
